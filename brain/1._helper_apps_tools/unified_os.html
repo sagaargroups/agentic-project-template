@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Sovereign OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060709;--s1:#0c0e12;--s2:#111418;--b:#1a1e26;--bh:#252c38;
+  --amber:#c8901a;--ag:rgba(200,144,26,.07);--ad:#6e4f0e;
+  --teal:#1a9a78;--tg:rgba(26,154,120,.06);--td:#0e5442;
+  --purple:#7c64c8;--pg:rgba(124,100,200,.06);--pd:#4a3a7a;
+  --red:#b83c3c;--green:#28945a;
+  --text:#dcd8d2;--t2:#757068;--t3:#32302c;
+  --mono:'Space Mono',monospace;--sans:'Space Grotesk',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;min-height:100vh}
+#app{display:flex;min-height:100vh}
+
+/* ── SIDEBAR ── */
+#sb{width:210px;min-width:210px;border-right:1px solid var(--b);display:flex;flex-direction:column;height:100vh;position:sticky;top:0;overflow-y:auto}
+.logo{padding:22px 18px 16px}
+.logo-name{font-size:17px;font-weight:600;letter-spacing:-.02em;margin-bottom:2px}
+.logo-tag{font-size:10px;font-family:var(--mono);color:var(--t2);letter-spacing:.08em}
+.sys-group{padding:0 0 8px}
+.sys-label{font-size:9px;font-family:var(--mono);color:var(--t3);letter-spacing:.15em;padding:12px 18px 5px;text-transform:uppercase}
+.ni{display:flex;align-items:center;gap:9px;padding:8px 18px;cursor:pointer;color:var(--t2);font-size:12px;font-weight:400;transition:all .12s;border-left:2px solid transparent}
+.ni:hover{color:var(--text);background:var(--s1)}
+.ni.on{color:var(--amber);border-left-color:var(--amber);background:var(--ag)}
+.ni.on.teal{color:var(--teal);border-left-color:var(--teal);background:var(--tg)}
+.ni.on.purple{color:var(--purple);border-left-color:var(--purple);background:var(--pg)}
+.ni-dot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.5;flex-shrink:0}
+.ns{flex:1}
+.nfoot{padding:14px 18px;border-top:1px solid var(--b);font-size:10px;font-family:var(--mono);color:var(--t3)}
+.api-dot{width:5px;height:5px;border-radius:50%;background:var(--amber);display:inline-block;margin-right:5px;vertical-align:middle}
+
+/* ── MAIN ── */
+#main{flex:1;padding:36px 40px;max-width:880px;overflow-y:auto}
+.view{display:none}.view.on{display:block}
+.ph{margin-bottom:28px}
+.pt{font-size:24px;font-weight:600;letter-spacing:-.02em;margin-bottom:5px}
+.ps{color:var(--t2);font-size:13px}
+.rb{display:flex;justify-content:space-between;align-items:center}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+/* ── STATS ── */
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px}
+.sc{background:var(--s1);border:1px solid var(--b);padding:16px;position:relative;overflow:hidden}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent,var(--amber))}
+.sv{font-family:var(--mono);font-size:24px;color:var(--accent,var(--amber));margin-bottom:3px;font-weight:700}
+.sl{font-size:11px;color:var(--t2)}
+
+/* ── FEED ── */
+.feed-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--b)}
+.feed-icon{width:28px;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;font-family:var(--mono);flex-shrink:0;margin-top:1px}
+.fi-learn{background:var(--ag);color:var(--amber)}
+.fi-build{background:var(--tg);color:var(--teal)}
+.fi-log{background:var(--pg);color:var(--purple)}
+.feed-content{flex:1;min-width:0}
+.feed-title{font-size:12px;font-weight:500;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.feed-meta{font-size:11px;color:var(--t2);font-family:var(--mono)}
+
+/* ── CARDS ── */
+.card{background:var(--s1);border:1px solid var(--b);padding:18px;margin-bottom:10px;transition:border-color .12s}
+.card:hover{border-color:var(--bh)}
+.ct{font-size:13px;font-weight:500;margin-bottom:5px}
+.cs{font-size:12px;color:var(--t2);line-height:1.6}
+
+/* ── ENTITY CARD ── */
+.ec{border:1px solid var(--b);padding:14px 16px;margin-bottom:8px;cursor:pointer;transition:all .12s;display:flex;justify-content:space-between;align-items:flex-start}
+.ec:hover{border-color:var(--bh);background:var(--s1)}
+.ec-name{font-size:13px;font-weight:500;margin-bottom:3px}
+.ec-meta{font-size:11px;font-family:var(--mono);color:var(--t3)}
+.ec-body{font-size:12px;color:var(--t2);margin-top:5px;line-height:1.5}
+.badge{display:inline-flex;align-items:center;font-size:10px;font-family:var(--mono);padding:2px 7px;border-radius:2px;border:1px solid}
+.b-learn{border-color:var(--ad);color:var(--amber)}
+.b-build{border-color:var(--td);color:var(--teal)}
+.b-log{border-color:var(--pd);color:var(--purple)}
+.b-pattern{border-color:var(--red);color:var(--red);border-color:#5a2020}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;font-family:var(--sans);font-size:12px;font-weight:500;cursor:pointer;border:1px solid;transition:all .12s;background:transparent}
+.btn-p{border-color:var(--amber);color:var(--amber)}.btn-p:hover{background:var(--amber);color:var(--bg)}
+.btn-t{border-color:var(--teal);color:var(--teal)}.btn-t:hover{background:var(--teal);color:var(--bg)}
+.btn-v{border-color:var(--purple);color:var(--purple)}.btn-v:hover{background:var(--purple);color:var(--bg)}
+.btn-g{border-color:var(--bh);color:var(--t2)}.btn-g:hover{border-color:var(--t2);color:var(--text)}
+.btn-d{border-color:var(--red);color:var(--red)}.btn-d:hover{background:var(--red);color:#fff}
+.btn-sm{padding:5px 11px;font-size:11px}
+
+/* ── FORM ── */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:10px;font-family:var(--mono);color:var(--t2);margin-bottom:6px;letter-spacing:.08em;text-transform:uppercase}
+.field input,.field textarea,.field select{width:100%;background:var(--bg);border:1px solid var(--b);color:var(--text);font-family:var(--sans);font-size:13px;padding:9px 12px;outline:none;transition:border .12s;resize:vertical;font-weight:300}
+.field input:focus,.field textarea:focus{border-color:var(--amber)}
+.field textarea{min-height:78px;line-height:1.6}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ── TABS ── */
+.tabs{display:flex;border-bottom:1px solid var(--b);margin-bottom:20px}
+.tab{padding:9px 18px;font-size:12px;cursor:pointer;color:var(--t2);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s}
+.tab:hover{color:var(--text)}
+.tab.on{color:var(--amber);border-bottom-color:var(--amber)}
+.tc{display:none}.tc.on{display:block}
+
+/* ── AI PANEL ── */
+.ai-box{border:1px solid var(--td);padding:18px;background:var(--tg);margin-bottom:14px}
+.ai-label{font-size:10px;font-family:var(--mono);color:var(--teal);letter-spacing:.09em;margin-bottom:12px}
+.ai-section{margin-bottom:14px}
+.ai-section-title{font-size:10px;font-family:var(--mono);color:var(--t2);margin-bottom:8px;letter-spacing:.07em;text-transform:uppercase}
+.pi{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;font-size:12px;line-height:1.5}
+.pd{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.pd-g{background:var(--green)}.pd-r{background:var(--red)}.pd-a{background:var(--amber)}.pd-t{background:var(--teal)}
+
+/* ── MD PREVIEW ── */
+.mdp{background:var(--bg);border:1px solid var(--b);padding:14px;font-family:var(--mono);font-size:11px;line-height:1.8;color:var(--t2);white-space:pre-wrap;max-height:260px;overflow-y:auto}
+
+/* ── GRAPH ── */
+.graph-node{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:2px;font-size:11px;font-family:var(--mono);margin:3px;cursor:pointer;transition:all .12s;border:1px solid}
+.gn-learn{border-color:var(--ad);color:var(--amber);background:var(--ag)}
+.gn-build{border-color:var(--td);color:var(--teal);background:var(--tg)}
+.gn-log{border-color:var(--pd);color:var(--purple);background:var(--pg)}
+
+/* ── LOADING ── */
+.spin{width:12px;height:12px;border:1.5px solid var(--td);border-top-color:var(--teal);border-radius:50%;animation:sp .7s linear infinite;flex-shrink:0}
+@keyframes sp{to{transform:rotate(360deg)}}
+.loading{display:none;align-items:center;gap:10px;font-size:12px;color:var(--teal);font-family:var(--mono);margin-bottom:14px}
+.loading.on{display:flex}
+
+/* ── PROGRESS STEPS ── */
+.steps{display:flex;gap:4px;margin-bottom:24px}
+.step{flex:1;height:3px;background:var(--b)}
+.step.done{background:var(--green)}.step.active{background:var(--amber)}
+
+/* ── ALERT ── */
+.alert{padding:10px 14px;border:1px solid;font-size:12px;margin-bottom:12px;display:none}
+.alert.on{display:block}
+.alert-w{border-color:var(--ad);color:var(--amber);background:var(--ag)}
+.alert-s{border-color:var(--td);color:var(--teal);background:var(--tg)}
+.alert-e{border-color:var(--red);color:var(--red)}
+
+/* ── GATE CHECK ── */
+.gc{display:flex;align-items:flex-start;gap:10px;padding:12px;border:1px solid var(--b);margin-bottom:8px;cursor:pointer;transition:all .12s}
+.gc:hover{border-color:var(--bh)}
+.gc.on{border-color:var(--amber);background:var(--ag)}
+.gc input{width:14px;height:14px;accent-color:var(--amber);margin-top:2px;flex-shrink:0}
+.gc-text{font-size:12px;line-height:1.5}
+.gc-sub{font-size:11px;color:var(--t2);margin-top:2px}
+
+/* ── TYPE PILLS ── */
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.pill{padding:4px 11px;border:1px solid var(--b);font-size:11px;cursor:pointer;color:var(--t2);font-family:var(--mono);transition:all .12s}
+.pill.on{border-color:var(--purple);color:var(--purple);background:var(--pg)}
+
+/* MISC */
+.mt8{margin-top:8px}.mt16{margin-top:16px}.mt24{margin-top:24px}
+.section-label{font-size:10px;font-family:var(--mono);color:var(--t3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--b)}
+.empty{text-align:center;padding:40px;color:var(--t3);font-size:12px}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--bh)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:100;align-items:flex-start;justify-content:center;padding:36px 16px;overflow-y:auto}
+.modal-overlay.on{display:flex}
+.modal{background:var(--s1);border:1px solid var(--bh);padding:26px;width:580px;max-width:96vw}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ── SIDEBAR ── -->
+<nav id="sb">
+  <div class="logo">
+    <div class="logo-name">Sovereign OS</div>
+    <div class="logo-tag">v1 · unified intelligence</div>
+  </div>
+
+  <div class="sys-group">
+    <div class="ni on" onclick="nav('dash')"><div class="ni-dot"></div>Dashboard</div>
+  </div>
+
+  <div class="sys-group">
+    <div class="sys-label">Learn</div>
+    <div class="ni" onclick="nav('learn-new')"><div class="ni-dot"></div>New domain</div>
+    <div class="ni" onclick="nav('learn-lib')"><div class="ni-dot"></div>Skill library</div>
+  </div>
+
+  <div class="sys-group">
+    <div class="sys-label">Build</div>
+    <div class="ni" onclick="nav('build-biz')"><div class="ni-dot"></div>Businesses</div>
+    <div class="ni" onclick="nav('build-priority')"><div class="ni-dot"></div>Priority</div>
+    <div class="ni" onclick="nav('build-const')"><div class="ni-dot"></div>Constitution</div>
+  </div>
+
+  <div class="sys-group">
+    <div class="sys-label">Log</div>
+    <div class="ni" onclick="nav('log-new')"><div class="ni-dot"></div>Log session</div>
+    <div class="ni" onclick="nav('log-sessions')"><div class="ni-dot"></div>Sessions</div>
+  </div>
+
+  <div class="sys-group">
+    <div class="sys-label">OS</div>
+    <div class="ni" onclick="nav('patterns')"><div class="ni-dot"></div>Pattern engine</div>
+    <div class="ni" onclick="nav('graph')"><div class="ni-dot"></div>Knowledge graph</div>
+  </div>
+
+  <div class="ns"></div>
+  <div class="ni" onclick="nav('settings')"><div class="ni-dot"></div>Settings</div>
+  <div class="nfoot"><span class="api-dot"></span>local · indexdb</div>
+</nav>
+
+<!-- ── MAIN ── -->
+<main id="main">
+
+<!-- DASHBOARD -->
+<div class="view on" id="v-dash">
+  <div class="ph rb">
+    <div><div class="pt">The loop is running</div><div class="ps">Three systems. One intelligence.</div></div>
+    <button class="btn btn-t btn-sm" onclick="nav('patterns')">Run pattern engine</button>
+  </div>
+  <div class="sg">
+    <div class="sc" style="--accent:var(--amber)"><div class="sv" id="st-skills">0</div><div class="sl">Skills built</div></div>
+    <div class="sc" style="--accent:var(--teal)"><div class="sv" id="st-biz">0</div><div class="sl">Businesses</div></div>
+    <div class="sc" style="--accent:var(--purple)"><div class="sv" id="st-sessions">0</div><div class="sl">Sessions logged</div></div>
+    <div class="sc" style="--accent:var(--red)"><div class="sv" id="st-patterns">0</div><div class="sl">Patterns found</div></div>
+  </div>
+  <div id="dash-alert"></div>
+  <div class="section-label">Recent activity</div>
+  <div id="dash-feed"></div>
+</div>
+
+<!-- LEARN: NEW DOMAIN -->
+<div class="view" id="v-learn-new">
+  <div class="ph"><div class="pt">Learn new domain</div><div class="ps">Gate → skeleton → compress → skill file</div></div>
+
+  <div class="steps"><div class="step active" id="ls-0"></div><div class="step" id="ls-1"></div><div class="step" id="ls-2"></div><div class="step" id="ls-3"></div></div>
+
+  <!-- Stage 0: Gate -->
+  <div id="ls-stage-0">
+    <div class="section-label">Gate — entry filter</div>
+    <div class="field"><label>Domain</label><input type="text" id="ln-domain" placeholder="What domain are you entering?"></div>
+    <div class="gc" onclick="toggleGC(this,'ln-g1')"><input type="checkbox" id="ln-g1"><div><div class="gc-text">This moves my primary direction</div><div class="gc-sub">Not curiosity. Not distraction. Directly serves the goal.</div></div></div>
+    <div class="gc" onclick="toggleGC(this,'ln-g2')"><input type="checkbox" id="ln-g2"><div><div class="gc-text">Timing is right</div><div class="gc-sub">Not too early, not too late.</div></div></div>
+    <div class="gc" onclick="toggleGC(this,'ln-g3')"><input type="checkbox" id="ln-g3"><div><div class="gc-text">Real cost accepted</div><div class="gc-sub">Time, energy, opportunity cost — accepted consciously.</div></div></div>
+    <div class="alert alert-e" id="gate-err">All three checks required.</div>
+    <div class="row mt16"><button class="btn btn-p btn-sm" onclick="learnGate()">Pass gate →</button></div>
+  </div>
+
+  <!-- Stage 1: Skeleton -->
+  <div id="ls-stage-1" style="display:none">
+    <div class="section-label">Skeleton — three questions</div>
+    <div class="field"><label>What problem made this domain necessary?</label><textarea id="ln-problem" placeholder="Why does this exist?"></textarea></div>
+    <div class="field"><label>Metric of truth in this domain</label><textarea id="ln-metric" placeholder="How does it measure whether something works?"></textarea></div>
+    <div class="field"><label>Where does this domain break down?</label><textarea id="ln-break" placeholder="Where does the lens stop working?"></textarea></div>
+    <div class="row mt16">
+      <button class="btn btn-g btn-sm" onclick="learnBack(1)">← Back</button>
+      <button class="btn btn-p btn-sm" onclick="learnSkeleton()">Compress →</button>
+    </div>
+  </div>
+
+  <!-- Stage 2: Compress -->
+  <div id="ls-stage-2" style="display:none">
+    <div class="section-label">Compress — one paragraph max</div>
+    <div class="field"><label>The principle (cut until it reads like a law)</label><textarea id="ln-principle" style="min-height:100px" placeholder="Everything you know. One paragraph. Stop when it's a law, not an essay."></textarea></div>
+    <div id="ln-wc" style="font-size:11px;color:var(--t2);margin-bottom:12px">0 words</div>
+    <div class="alert alert-w on" id="ln-warn" style="display:none">Above 80 words. Compress harder.</div>
+    <div class="row mt16">
+      <button class="btn btn-g btn-sm" onclick="learnBack(2)">← Back</button>
+      <button class="btn btn-p btn-sm" onclick="learnCompress()">Build skill file →</button>
+    </div>
+  </div>
+
+  <!-- Stage 3: Skill file -->
+  <div id="ls-stage-3" style="display:none">
+    <div class="section-label">Skill file — stored principle</div>
+    <div class="mdp" id="ln-md-preview"></div>
+    <div class="field mt16"><label>Extra notes before saving</label><textarea id="ln-notes" placeholder="Edge cases, warnings, conditions..."></textarea></div>
+    <div class="row mt16">
+      <button class="btn btn-p btn-sm" onclick="saveSkill()">Save to library</button>
+      <button class="btn btn-g btn-sm" onclick="exportSkillMD()">Export .md</button>
+    </div>
+    <div class="alert alert-s mt8" id="skill-saved">✓ Skill saved.</div>
+  </div>
+</div>
+
+<!-- LEARN: LIBRARY -->
+<div class="view" id="v-learn-lib">
+  <div class="ph rb">
+    <div><div class="pt">Skill library</div><div class="ps">Stored principles. Domain intelligence.</div></div>
+    <input type="text" id="skill-search" placeholder="Search..." style="background:var(--s1);border:1px solid var(--b);color:var(--text);padding:6px 12px;font-size:12px;width:180px;font-family:var(--sans)" oninput="renderSkills()">
+  </div>
+  <div id="skill-list"></div>
+</div>
+
+<!-- BUILD: BUSINESSES -->
+<div class="view" id="v-build-biz">
+  <div class="ph rb">
+    <div><div class="pt">Businesses</div><div class="ps">Strategy 1 (serve demand) · Strategy 2 (create market)</div></div>
+    <button class="btn btn-t btn-sm" onclick="openBizModal()">+ Add business</button>
+  </div>
+  <div class="tabs">
+    <div class="tab on" onclick="switchTab(this,'bt-s1')">Strategy 1</div>
+    <div class="tab" onclick="switchTab(this,'bt-s2')">Strategy 2</div>
+  </div>
+  <div class="tc on" id="bt-s1"><div id="biz-list-s1"></div></div>
+  <div class="tc" id="bt-s2"><div id="biz-list-s2"></div></div>
+</div>
+
+<!-- BUILD: PRIORITY -->
+<div class="view" id="v-build-priority">
+  <div class="ph rb">
+    <div><div class="pt">Priority</div><div class="ps">Matched to self-assessment. Ordered by readiness.</div></div>
+    <button class="btn btn-t btn-sm" onclick="openPrioModal()">+ Prioritize</button>
+  </div>
+  <div id="priority-list"></div>
+</div>
+
+<!-- BUILD: CONSTITUTION -->
+<div class="view" id="v-build-const">
+  <div class="ph rb">
+    <div><div class="pt">Constitution</div><div class="ps">Life blueprint. What happens when, and why.</div></div>
+    <button class="btn btn-t btn-sm" onclick="addYear()">+ Add year</button>
+  </div>
+  <div id="const-list"></div>
+</div>
+
+<!-- LOG: NEW SESSION -->
+<div class="view" id="v-log-new">
+  <div class="ph"><div class="pt">Log session</div><div class="ps">Capture while it's fresh. The loop reads this.</div></div>
+  <div class="two">
+    <div class="field"><label>Project</label><input type="text" id="log-project" list="proj-dl" placeholder="Project name"><datalist id="proj-dl"></datalist></div>
+    <div class="field"><label>Session title</label><input type="text" id="log-title" placeholder="What was this about?"></div>
+  </div>
+  <div class="pills" id="log-type-pills">
+    <div class="pill on" data-t="build" onclick="setLogType(this)">build</div>
+    <div class="pill" data-t="learn" onclick="setLogType(this)">learn</div>
+    <div class="pill" data-t="review" onclick="setLogType(this)">review</div>
+    <div class="pill" data-t="meeting" onclick="setLogType(this)">meeting</div>
+    <div class="pill" data-t="planning" onclick="setLogType(this)">planning</div>
+  </div>
+  <div class="field"><label>Raw log — what happened?</label><textarea id="log-raw" style="min-height:100px" placeholder="Everything. Unfiltered. Fast."></textarea></div>
+  <div class="two">
+    <div class="field"><label>What worked — and why structurally?</label><textarea id="log-worked" placeholder="WHY at system level."></textarea></div>
+    <div class="field"><label>What failed — and why?</label><textarea id="log-failed" placeholder="WHY structurally."></textarea></div>
+  </div>
+  <div class="two">
+    <div class="field"><label>Decisions made</label><textarea id="log-decisions" placeholder="What was decided?"></textarea></div>
+    <div class="field"><label>Next actions</label><textarea id="log-next" placeholder="What happens next?"></textarea></div>
+  </div>
+  <div class="row mt16">
+    <button class="btn btn-v btn-sm" onclick="saveSession()">Save session</button>
+    <button class="btn btn-g btn-sm" onclick="clearLogForm()">Clear</button>
+  </div>
+  <div class="alert alert-s mt8" id="session-saved">✓ Session saved.</div>
+</div>
+
+<!-- LOG: SESSIONS LIST -->
+<div class="view" id="v-log-sessions">
+  <div class="ph rb">
+    <div><div class="pt">Sessions</div><div class="ps">Every work session. The raw material for patterns.</div></div>
+    <input type="text" id="session-search" placeholder="Search..." style="background:var(--s1);border:1px solid var(--b);color:var(--text);padding:6px 12px;font-size:12px;width:180px;font-family:var(--sans)" oninput="renderSessions()">
+  </div>
+  <div id="session-list"></div>
+</div>
+
+<!-- PATTERN ENGINE -->
+<div class="view" id="v-patterns">
+  <div class="ph rb">
+    <div><div class="pt">Pattern engine</div><div class="ps">Reads all entities. Surfaces what the loop is telling you.</div></div>
+    <button class="btn btn-t" onclick="runPatterns()" id="run-btn">Run engine</button>
+  </div>
+  <div class="loading" id="pat-load"><div class="spin"></div><span>Reading all entities across SLS · BFS · PSL...</span></div>
+  <div class="alert alert-w" id="pat-warn">Need at least 5 entities (skills + sessions + businesses) for meaningful detection.</div>
+  <div id="pat-output"></div>
+</div>
+
+<!-- KNOWLEDGE GRAPH -->
+<div class="view" id="v-graph">
+  <div class="ph"><div class="pt">Knowledge graph</div><div class="ps">All entities. All links. The full map.</div></div>
+  <div class="two" style="margin-bottom:20px">
+    <div class="card" style="border-left:2px solid var(--amber)"><div class="ct" style="color:var(--amber)">Learn</div><div id="g-learn-count" class="sv" style="font-size:20px;color:var(--amber);font-family:var(--mono)">0</div><div class="cs">skills in library</div></div>
+    <div class="card" style="border-left:2px solid var(--teal)"><div class="ct" style="color:var(--teal)">Build</div><div id="g-build-count" class="sv" style="font-size:20px;color:var(--teal);font-family:var(--mono)">0</div><div class="cs">businesses mapped</div></div>
+  </div>
+  <div class="section-label">Skills</div>
+  <div id="g-skills"></div>
+  <div class="section-label mt16">Businesses</div>
+  <div id="g-biz"></div>
+  <div class="section-label mt16">Sessions</div>
+  <div id="g-sessions"></div>
+</div>
+
+<!-- SETTINGS -->
+<div class="view" id="v-settings">
+  <div class="ph"><div class="pt">Settings</div><div class="ps">Storage · API · Export</div></div>
+  <div class="card" style="border-color:var(--ad);margin-bottom:20px">
+    <div class="ct" style="color:var(--amber)">V1 — unified IndexDB</div>
+    <div class="cs">All entities in one store. Fixed envelope + flexible body. Indexed by type, project, date, tags. Export anytime.</div>
+  </div>
+  <div style="padding:12px 0;border-bottom:1px solid var(--b)" class="rb">
+    <div><div style="font-weight:500;font-size:13px">Export full OS</div><div style="font-size:11px;color:var(--t2);margin-top:2px">All entities as JSON</div></div>
+    <button class="btn btn-g btn-sm" onclick="exportAll()">Export JSON</button>
+  </div>
+  <div style="padding:12px 0;border-bottom:1px solid var(--b)" class="rb">
+    <div><div style="font-weight:500;font-size:13px">Export skill library</div><div style="font-size:11px;color:var(--t2);margin-top:2px">All skills as .md files (zip)</div></div>
+    <button class="btn btn-g btn-sm" onclick="exportSkillsMD()">Export .md</button>
+  </div>
+  <div style="padding:12px 0" class="rb">
+    <div><div style="font-weight:500;font-size:13px">Clear all data</div></div>
+    <button class="btn btn-d btn-sm" onclick="clearAll()">Clear</button>
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="biz-modal">
+<div class="modal">
+  <div class="rb" style="margin-bottom:16px">
+    <div style="font-size:15px;font-weight:600">Add business</div>
+    <button class="btn btn-g btn-sm" onclick="closeModal('biz-modal')">✕</button>
+  </div>
+  <input type="hidden" id="biz-edit-id">
+  <div class="two">
+    <div class="field"><label>Name</label><input type="text" id="biz-name" placeholder="Business name"></div>
+    <div class="field"><label>Type</label>
+      <select id="biz-type"><option value="s1">Strategy 1 — Serve demand</option><option value="s2">Strategy 2 — Create market</option></select>
+    </div>
+  </div>
+  <div class="field"><label>Description</label><textarea id="biz-desc" placeholder="What problem, for whom, how."></textarea></div>
+  <div class="two">
+    <div class="field"><label>Capital required</label><input type="text" id="biz-capital" placeholder="₹ amount"></div>
+    <div class="field"><label>Assessment match</label>
+      <select id="biz-match"><option value="green">✅ Green — perfect fit</option><option value="yellow">⚠️ Yellow — needs adjustment</option><option value="red">❌ Red — future only</option></select>
+    </div>
+  </div>
+  <div style="border:1px solid var(--red);padding:14px;background:rgba(184,60,60,.04);margin-bottom:12px">
+    <div style="font-size:10px;font-family:var(--mono);color:var(--red);margin-bottom:8px;letter-spacing:.08em">KILL CONDITION — required</div>
+    <textarea id="biz-kill" placeholder="If after X months revenue < Y and no path to Z — this business is shut down." style="width:100%;background:var(--bg);border:1px solid var(--b);color:var(--text);font-family:var(--sans);font-size:12px;padding:8px;resize:vertical;min-height:60px;outline:none"></textarea>
+  </div>
+  <div class="row"><button class="btn btn-t btn-sm" onclick="saveBiz()">Save business</button></div>
+</div>
+</div>
+
+<div class="modal-overlay" id="prio-modal">
+<div class="modal">
+  <div class="rb" style="margin-bottom:16px">
+    <div style="font-size:15px;font-weight:600">Prioritize business</div>
+    <button class="btn btn-g btn-sm" onclick="closeModal('prio-modal')">✕</button>
+  </div>
+  <div class="field"><label>Select business</label>
+    <select id="prio-biz-sel" style="width:100%;background:var(--bg);border:1px solid var(--b);color:var(--text);padding:9px 12px;font-family:var(--sans);font-size:13px"></select>
+  </div>
+  <div class="two">
+    <div class="field"><label>Priority rank</label>
+      <select id="prio-rank"><option value="1">#1 — Start now</option><option value="2">#2 — After #1</option><option value="3">#3 — Future</option></select>
+    </div>
+    <div class="field"><label>Why now</label><input type="text" id="prio-why" placeholder="Assessment-based reason"></div>
+  </div>
+  <div class="row"><button class="btn btn-t btn-sm" onclick="savePrio()">Add to priority</button></div>
+</div>
+</div>
+
+<div class="modal-overlay" id="entity-modal">
+<div class="modal">
+  <div class="rb" style="margin-bottom:12px">
+    <div style="font-size:10px;font-family:var(--mono);color:var(--t2)" id="em-type"></div>
+    <button class="btn btn-g btn-sm" onclick="closeModal('entity-modal')">✕</button>
+  </div>
+  <div style="font-size:16px;font-weight:600;margin-bottom:14px" id="em-title"></div>
+  <div id="em-body" style="font-size:13px;line-height:1.7;color:var(--t2)"></div>
+  <div class="row mt16">
+    <button class="btn btn-g btn-sm" onclick="exportEntityMD()">Export .md</button>
+    <button class="btn btn-d btn-sm" onclick="deleteEntity()">Delete</button>
+  </div>
+</div>
+</div>
+
+<script>
+// ── UNIFIED DB SCHEMA ─────────────────────────────────────────────────────────
+let db;
+let learnState={}, currentEntityId=null, logType='build', patternData=null;
+
+function initDB(){
+  return new Promise((res,rej)=>{
+    const r=indexedDB.open('SOS_V1',1);
+    r.onupgradeneeded=e=>{
+      const d=e.target.result;
+      // Unified entity store — fixed envelope + flexible body
+      const s=d.createObjectStore('entities',{keyPath:'id'});
+      s.createIndex('type','type',{unique:false});
+      s.createIndex('project_id','project_id',{unique:false});
+      s.createIndex('created_at','created_at',{unique:false});
+      s.createIndex('status','status',{unique:false});
+      s.createIndex('tags','tags',{unique:false,multiEntry:true});
+      d.createObjectStore('settings',{keyPath:'key'});
+      d.createObjectStore('patterns',{keyPath:'id'});
+      d.createObjectStore('priorities',{keyPath:'id'});
+      d.createObjectStore('constitution',{keyPath:'id'});
+    };
+    r.onsuccess=e=>{db=e.target.result;res()};
+    r.onerror=()=>rej(r.error);
+  });
+}
+
+// Entity factory — enforces fixed envelope
+function mkEntity(type,body,tags=[],projectId=null){
+  return{
+    id:`${type}_${Date.now()}`,
+    type, status:'active',
+    project_id:projectId,
+    version:1, tags,
+    links:[],
+    created_at:Date.now(),
+    updated_at:Date.now(),
+    body
+  };
+}
+
+const dPut=(s,o)=>new Promise((res,rej)=>{const t=db.transaction(s,'readwrite');t.objectStore(s).put(o).onsuccess=()=>res();t.onerror=()=>rej()});
+const dGet=(s,k)=>new Promise((res,rej)=>{const t=db.transaction(s,'readonly');const r=t.objectStore(s).get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej()});
+const dAll=(s)=>new Promise((res,rej)=>{const t=db.transaction(s,'readonly');const r=t.objectStore(s).getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej()});
+const dDel=(s,k)=>new Promise((res,rej)=>{const t=db.transaction(s,'readwrite');t.objectStore(s).delete(k).onsuccess=()=>res();t.onerror=()=>rej()});
+
+// Indexed query by type
+function getByType(type){
+  return new Promise((res,rej)=>{
+    const t=db.transaction('entities','readonly');
+    const idx=t.objectStore('entities').index('type');
+    const r=idx.getAll(type);
+    r.onsuccess=()=>res(r.result);r.onerror=()=>rej();
+  });
+}
+
+// ── NAV ──────────────────────────────────────────────────────────────────────
+function nav(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('on'));
+  document.querySelectorAll('.ni').forEach(el=>el.classList.remove('on'));
+  document.getElementById('v-'+v).classList.add('on');
+  // Find matching nav item
+  document.querySelectorAll('.ni').forEach(ni=>{
+    if(ni.getAttribute('onclick')===`nav('${v}')`){ni.classList.add('on');}
+  });
+  const renders={
+    'dash':renderDash,'learn-lib':renderSkills,'build-biz':renderBiz,
+    'build-priority':renderPriority,'build-const':renderConst,
+    'log-sessions':renderSessions,'log-new':populateProjList,
+    'graph':renderGraph,'patterns':()=>{}
+  };
+  if(renders[v]) renders[v]();
+}
+
+function switchTab(el,id){
+  const p=el.parentElement;
+  p.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  const container=p.parentElement||p.closest('.view');
+  container.querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+}
+
+// ── DASHBOARD ────────────────────────────────────────────────────────────────
+async function renderDash(){
+  const [skills,biz,sessions,pats]=await Promise.all([
+    getByType('skill'),getByType('business'),getByType('session'),dbGetAllPatterns()
+  ]);
+  document.getElementById('st-skills').textContent=skills.length;
+  document.getElementById('st-biz').textContent=biz.length;
+  document.getElementById('st-sessions').textContent=sessions.length;
+  document.getElementById('st-patterns').textContent=pats.length?pats[0].count||0:0;
+
+  const alertBox=document.getElementById('dash-alert');
+  const total=skills.length+biz.length+sessions.length;
+  if(total>=5&&!pats.length){
+    alertBox.innerHTML=`<div class="alert alert-w on">You have ${total} entities. <strong>Run the pattern engine</strong> to surface cross-system insights. <button class="btn btn-t btn-sm" style="margin-left:10px" onclick="nav('patterns')">Run now →</button></div>`;
+  } else alertBox.innerHTML='';
+
+  const all=[
+    ...skills.map(e=>({...e,sys:'learn'})),
+    ...biz.map(e=>({...e,sys:'build'})),
+    ...sessions.map(e=>({...e,sys:'log'}))
+  ].sort((a,b)=>b.created_at-a.created_at).slice(0,6);
+
+  const feed=document.getElementById('dash-feed');
+  if(!all.length){feed.innerHTML='<div class="empty">Nothing yet. Start learning, building, or logging.</div>';return;}
+  feed.innerHTML=all.map(e=>`
+    <div class="feed-item">
+      <div class="feed-icon fi-${e.sys}">${e.sys==='learn'?'SLS':e.sys==='build'?'BFS':'PSL'}</div>
+      <div class="feed-content">
+        <div class="feed-title">${e.body?.domain||e.body?.name||e.body?.title||'—'}</div>
+        <div class="feed-meta">${e.type} · ${timeAgo(e.created_at)}</div>
+      </div>
+      <span class="badge b-${e.sys}">${e.type}</span>
+    </div>`).join('');
+}
+
+async function dbGetAllPatterns(){const r=await dAll('patterns');return r;}
+
+// ── LEARN ─────────────────────────────────────────────────────────────────────
+function learnStage(n){
+  [0,1,2,3].forEach(i=>{
+    document.getElementById('ls-stage-'+i).style.display=i===n?'block':'none';
+    const s=document.getElementById('ls-'+i);
+    if(s) s.className='step'+(i<n?' done':i===n?' active':'');
+  });
+}
+
+function toggleGC(el,id){
+  const cb=document.getElementById(id);cb.checked=!cb.checked;
+  el.classList.toggle('on',cb.checked);
+}
+
+function learnGate(){
+  const domain=document.getElementById('ln-domain').value.trim();
+  const checks=['ln-g1','ln-g2','ln-g3'].every(id=>document.getElementById(id).checked);
+  if(!domain||!checks){document.getElementById('gate-err').classList.add('on');return;}
+  document.getElementById('gate-err').classList.remove('on');
+  learnState={domain};
+  learnStage(1);
+}
+
+function learnBack(n){learnStage(n-1);}
+
+function learnSkeleton(){
+  const p=document.getElementById('ln-problem').value.trim();
+  const m=document.getElementById('ln-metric').value.trim();
+  const b=document.getElementById('ln-break').value.trim();
+  if(!p||!m){alert('Problem and metric of truth are required.');return;}
+  learnState={...learnState,problem:p,metric:m,breakdown:b};
+  learnStage(2);
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const c=document.getElementById('ln-principle');
+  if(c) c.addEventListener('input',()=>{
+    const w=c.value.trim().split(/\s+/).filter(Boolean).length;
+    document.getElementById('ln-wc').textContent=w+' words';
+    document.getElementById('ln-warn').style.display=w>80?'block':'none';
+  });
+  const comp=document.getElementById('comp-text');
+  if(comp) comp.addEventListener('input',()=>{
+    const w=comp.value.trim().split(/\s+/).filter(Boolean).length;
+    const el=document.getElementById('comp-wc');
+    if(el) el.textContent=w+' words';
+  });
+});
+
+function learnCompress(){
+  const p=document.getElementById('ln-principle').value.trim();
+  if(!p){alert('Write the principle first.');return;}
+  learnState.principle=p;
+  const md=buildSkillMD();
+  document.getElementById('ln-md-preview').textContent=md;
+  learnState.md=md;
+  learnStage(3);
+}
+
+function buildSkillMD(){
+  const s=learnState;
+  return`# ${s.domain}\n> Generated: ${new Date().toISOString().slice(0,10)}\n\n---\n\n## Core problem\n${s.problem||'—'}\n\n## Metric of truth\n${s.metric||'—'}\n\n## Breakdown point\n${s.breakdown||'—'}\n\n---\n\n## Principle\n${s.principle||'—'}\n`;
+}
+
+async function saveSkill(){
+  const notes=document.getElementById('ln-notes').value;
+  const md=learnState.md+(notes?`\n\n## Notes\n${notes}`:'');
+  const e=mkEntity('skill',{
+    domain:learnState.domain,
+    principle:learnState.principle,
+    problem:learnState.problem,
+    metric:learnState.metric,
+    breakdown:learnState.breakdown,
+    md
+  },[learnState.domain.toLowerCase()]);
+  await dPut('entities',e);
+  document.getElementById('skill-saved').classList.add('on');
+  setTimeout(()=>{document.getElementById('skill-saved').classList.remove('on');learnReset();nav('learn-lib');},1400);
+}
+
+function learnReset(){
+  learnState={};
+  ['ln-domain','ln-problem','ln-metric','ln-break','ln-principle','ln-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['ln-g1','ln-g2','ln-g3'].forEach(id=>{const el=document.getElementById(id);if(el){el.checked=false;el.closest('.gc')?.classList.remove('on');}});
+  learnStage(0);
+}
+
+function exportSkillMD(){
+  const md=learnState.md||buildSkillMD();
+  dl(md,(learnState.domain||'skill').replace(/\s+/g,'_')+'_skill.md','text/markdown');
+}
+
+async function renderSkills(){
+  const skills=await getByType('skill');
+  const q=document.getElementById('skill-search')?.value||'';
+  const filtered=q?skills.filter(s=>(s.body?.domain+s.body?.principle).toLowerCase().includes(q.toLowerCase())):skills;
+  const box=document.getElementById('skill-list');
+  if(!filtered.length){box.innerHTML='<div class="empty">No skills yet. Complete a learning session.</div>';return;}
+  box.innerHTML=filtered.sort((a,b)=>b.created_at-a.created_at).map(e=>`
+    <div class="ec" onclick="openEntity('${e.id}')">
+      <div>
+        <div class="ec-name">${e.body?.domain||'—'}</div>
+        <div class="ec-meta">${timeAgo(e.created_at)}</div>
+        <div class="ec-body">${(e.body?.principle||'').slice(0,120)}${(e.body?.principle||'').length>120?'...':''}</div>
+      </div>
+      <span class="badge b-learn">skill</span>
+    </div>`).join('');
+}
+
+// ── BUILD ─────────────────────────────────────────────────────────────────────
+function openBizModal(){
+  document.getElementById('biz-edit-id').value='';
+  ['biz-name','biz-desc','biz-capital','biz-kill'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('biz-modal').classList.add('on');
+}
+
+async function saveBiz(){
+  const name=document.getElementById('biz-name').value.trim();
+  const kill=document.getElementById('biz-kill').value.trim();
+  if(!name||!kill){alert('Name and kill condition required.');return;}
+  const editId=document.getElementById('biz-edit-id').value;
+  const type=document.getElementById('biz-type').value;
+  const e=mkEntity('business',{
+    name,type,
+    desc:document.getElementById('biz-desc').value,
+    capital:document.getElementById('biz-capital').value,
+    match:document.getElementById('biz-match').value,
+    kill
+  },[type,name.toLowerCase()]);
+  if(editId) e.id=editId;
+  await dPut('entities',e);
+  closeModal('biz-modal');
+  renderBiz();
+}
+
+async function renderBiz(){
+  const biz=await getByType('business');
+  ['s1','s2'].forEach(t=>{
+    const box=document.getElementById('biz-list-'+t);
+    const items=biz.filter(b=>b.body?.type===t).sort((a,b)=>b.created_at-a.created_at);
+    if(!items.length){box.innerHTML='<div class="empty">No '+t+' businesses yet.</div>';return;}
+    box.innerHTML=items.map(e=>`
+      <div class="ec" onclick="openEntity('${e.id}')">
+        <div>
+          <div class="ec-name">${e.body?.name||'—'}</div>
+          <div class="ec-meta">${e.body?.capital||'—'} · ${matchLabel(e.body?.match)}</div>
+          <div class="ec-body">${(e.body?.desc||'').slice(0,100)}${(e.body?.desc||'').length>100?'...':''}</div>
+        </div>
+        <span class="badge b-build">${t}</span>
+      </div>`).join('');
+  });
+}
+
+function matchLabel(m){return m==='green'?'✅ fit':m==='yellow'?'⚠ needs work':'❌ future';}
+
+async function openPrioModal(){
+  const biz=await getByType('business');
+  const sel=document.getElementById('prio-biz-sel');
+  sel.innerHTML=biz.map(b=>`<option value="${b.id}">${b.body?.name} (${b.body?.type})</option>`).join('');
+  document.getElementById('prio-modal').classList.add('on');
+}
+
+async function savePrio(){
+  const bizId=document.getElementById('prio-biz-sel').value;
+  const rank=parseInt(document.getElementById('prio-rank').value);
+  const why=document.getElementById('prio-why').value;
+  await dPut('priorities',{id:bizId,bizId,rank,why,timestamp:Date.now()});
+  closeModal('prio-modal');
+  renderPriority();
+}
+
+async function renderPriority(){
+  const [prios,biz]=await Promise.all([dAll('priorities'),getByType('business')]);
+  const box=document.getElementById('priority-list');
+  if(!prios.length){box.innerHTML='<div class="empty">No priorities set. Add businesses first.</div>';return;}
+  box.innerHTML=prios.sort((a,b)=>a.rank-b.rank).map(p=>{
+    const b=biz.find(x=>x.id===p.bizId)||{body:{}};
+    return`<div class="ec">
+      <div>
+        <div class="ec-name">#${p.rank} — ${b.body?.name||'—'}</div>
+        <div class="ec-meta">${b.body?.type||'—'} · ${matchLabel(b.body?.match)}</div>
+        <div class="ec-body">${p.why||''}</div>
+      </div>
+      <span class="badge b-build">priority</span>
+    </div>`;
+  }).join('');
+}
+
+async function addYear(){
+  await dPut('constitution',{id:Date.now().toString(),year:'Year '+(await dAll('constitution')).length+1,execute:'',why:'',target:'',enables:'',timestamp:Date.now()});
+  renderConst();
+}
+
+async function renderConst(){
+  const years=await dAll('constitution');
+  const box=document.getElementById('const-list');
+  if(!years.length){box.innerHTML='<div class="empty">No years defined. Add your life blueprint.</div>';return;}
+  box.innerHTML=years.sort((a,b)=>a.timestamp-b.timestamp).map(y=>`
+    <div class="card">
+      <div class="rb" style="margin-bottom:14px">
+        <input value="${y.year}" style="background:transparent;border:none;border-bottom:1px solid var(--b);color:var(--text);font-size:15px;font-weight:600;font-family:var(--sans);width:160px;padding:2px 0" onchange="updateYear('${y.id}','year',this.value)">
+        <button class="btn btn-d btn-sm" onclick="deleteYear('${y.id}')">✕</button>
+      </div>
+      <div class="two">
+        <div class="field"><label>Execute</label><textarea style="min-height:54px" onchange="updateYear('${y.id}','execute',this.value)">${y.execute||''}</textarea></div>
+        <div class="field"><label>Why now</label><textarea style="min-height:54px" onchange="updateYear('${y.id}','why',this.value)">${y.why||''}</textarea></div>
+        <div class="field"><label>Target outcome</label><textarea style="min-height:54px" onchange="updateYear('${y.id}','target',this.value)">${y.target||''}</textarea></div>
+        <div class="field"><label>Enables next year</label><textarea style="min-height:54px" onchange="updateYear('${y.id}','enables',this.value)">${y.enables||''}</textarea></div>
+      </div>
+    </div>`).join('');
+}
+
+async function updateYear(id,k,v){const y=await dGet('constitution',id);y[k]=v;await dPut('constitution',y);}
+async function deleteYear(id){await dDel('constitution',id);renderConst();}
+
+// ── LOG ───────────────────────────────────────────────────────────────────────
+function setLogType(el){
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');logType=el.dataset.t;
+}
+
+async function populateProjList(){
+  const sessions=await getByType('session');
+  const projs=[...new Set(sessions.map(s=>s.body?.project).filter(Boolean))];
+  document.getElementById('proj-dl').innerHTML=projs.map(p=>`<option value="${p}">`).join('');
+}
+
+async function saveSession(){
+  const title=document.getElementById('log-title').value.trim();
+  const raw=document.getElementById('log-raw').value.trim();
+  if(!title||!raw){alert('Title and raw log required.');return;}
+  const e=mkEntity('session',{
+    project:document.getElementById('log-project').value,
+    title,type:logType,
+    log:raw,
+    worked:document.getElementById('log-worked').value,
+    failed:document.getElementById('log-failed').value,
+    decisions:document.getElementById('log-decisions').value,
+    next:document.getElementById('log-next').value
+  },[logType]);
+  await dPut('entities',e);
+  document.getElementById('session-saved').classList.add('on');
+  setTimeout(()=>{document.getElementById('session-saved').classList.remove('on');clearLogForm();nav('log-sessions');},1200);
+}
+
+function clearLogForm(){
+  ['log-project','log-title','log-raw','log-worked','log-failed','log-decisions','log-next'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));
+  document.querySelector('.pill[data-t="build"]')?.classList.add('on');
+  logType='build';
+}
+
+async function renderSessions(){
+  const sessions=await getByType('session');
+  const q=document.getElementById('session-search')?.value||'';
+  const filtered=q?sessions.filter(s=>(s.body?.title+s.body?.log).toLowerCase().includes(q.toLowerCase())):sessions;
+  const box=document.getElementById('session-list');
+  if(!filtered.length){box.innerHTML='<div class="empty">No sessions yet.</div>';return;}
+  box.innerHTML=filtered.sort((a,b)=>b.created_at-a.created_at).map(e=>`
+    <div class="ec" onclick="openEntity('${e.id}')">
+      <div>
+        <div class="ec-name">${e.body?.title||'—'}</div>
+        <div class="ec-meta">${e.body?.project||'no project'} · ${e.body?.type||'—'} · ${timeAgo(e.created_at)}</div>
+        <div class="ec-body">${(e.body?.log||'').slice(0,100)}...</div>
+      </div>
+      <span class="badge b-log">session</span>
+    </div>`).join('');
+}
+
+// ── PATTERN ENGINE ────────────────────────────────────────────────────────────
+async function runPatterns(){
+  const [skills,biz,sessions]=await Promise.all([getByType('skill'),getByType('business'),getByType('session')]);
+  const total=skills.length+biz.length+sessions.length;
+  const warn=document.getElementById('pat-warn');
+  if(total<5){warn.classList.add('on');return;}
+  warn.classList.remove('on');
+  document.getElementById('pat-load').classList.add('on');
+  document.getElementById('run-btn').disabled=true;
+  document.getElementById('pat-output').innerHTML='';
+
+  const skillText=skills.map(s=>`SKILL [${s.body?.domain}]: ${s.body?.principle}`).join('\n');
+  const bizText=biz.map(b=>`BUSINESS [${b.body?.name}/${b.body?.type}]: ${b.body?.desc} KILL: ${b.body?.kill}`).join('\n');
+  const sessText=sessions.map(s=>`SESSION [${s.body?.project||'?'}/${s.body?.type}]: Worked: ${s.body?.worked||'—'} Failed: ${s.body?.failed||'—'}`).join('\n');
+
+  const prompt=`You are analyzing an operating system with three interconnected entity types.
+
+SKILLS (learning system):
+${skillText||'none'}
+
+BUSINESSES (business framework):
+${bizText||'none'}
+
+SESSIONS (project logs):
+${sessText||'none'}
+
+Return ONLY valid JSON:
+{
+  "learn_patterns": ["insight about learning patterns"],
+  "build_patterns": ["insight about business patterns"],
+  "cross_system": ["insight that only appears when you see all three together"],
+  "missing_skills": ["skills needed for current businesses but not yet learned"],
+  "loop_message": "One sentence — what the system is trying to tell the operator right now",
+  "v2_os": "# OS v2 process\\n\\nBased on all patterns: what should change in how this person operates all three systems together?\\n\\n## Keep\\n\\n## Change\\n\\n## Add"
+}
+
+Be specific. Reference actual entities. No generic advice.`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await res.json();
+    const raw=data.content?.map(c=>c.text||'').join('').replace(/```json|```/g,'').trim();
+    const parsed=JSON.parse(raw);
+    patternData=parsed;
+    const count=(parsed.learn_patterns?.length||0)+(parsed.build_patterns?.length||0)+(parsed.cross_system?.length||0);
+    await dPut('patterns',{id:'latest',count,data:parsed,timestamp:Date.now()});
+    renderPatternOutput(parsed);
+  }catch(e){
+    document.getElementById('pat-output').innerHTML=`<div class="alert alert-e on">Engine failed: ${e.message}</div>`;
+  }
+  document.getElementById('pat-load').classList.remove('on');
+  document.getElementById('run-btn').disabled=false;
+}
+
+function renderPatternOutput(d){
+  const box=document.getElementById('pat-output');
+  box.innerHTML=`
+  <div class="alert alert-s on" style="margin-bottom:16px;font-size:13px;font-weight:500">"${d.loop_message||''}"</div>
+  <div class="ai-box">
+    <div class="ai-label">pattern engine output</div>
+    <div class="two">
+      <div class="ai-section">
+        <div class="ai-section-title">Learning patterns</div>
+        ${(d.learn_patterns||[]).map(p=>`<div class="pi"><div class="pd pd-a"></div><div>${p}</div></div>`).join('')}
+      </div>
+      <div class="ai-section">
+        <div class="ai-section-title">Business patterns</div>
+        ${(d.build_patterns||[]).map(p=>`<div class="pi"><div class="pd pd-t"></div><div>${p}</div></div>`).join('')}
+      </div>
+    </div>
+    <div class="ai-section" style="border-top:1px solid var(--b);padding-top:12px;margin-top:4px">
+      <div class="ai-section-title">Cross-system — only visible from here</div>
+      ${(d.cross_system||[]).map(p=>`<div class="pi"><div class="pd pd-g"></div><div>${p}</div></div>`).join('')}
+    </div>
+    ${d.missing_skills?.length?`<div class="ai-section" style="border-top:1px solid var(--b);padding-top:12px;margin-top:4px">
+      <div class="ai-section-title">Skills missing for current businesses</div>
+      ${d.missing_skills.map(p=>`<div class="pi"><div class="pd pd-r"></div><div>${p}</div></div>`).join('')}
+    </div>`:''}
+  </div>
+  ${d.v2_os?`<div class="rb" style="margin-bottom:10px">
+    <div style="font-size:12px;font-weight:500;color:var(--t2)">OS v2 process</div>
+    <button class="btn btn-g btn-sm" onclick="exportV2()">Export .md</button>
+  </div>
+  <div class="mdp">${escHtml(d.v2_os)}</div>`:''}`;
+}
+
+function exportV2(){if(patternData?.v2_os) dl(patternData.v2_os,'os_v2_'+Date.now()+'.md','text/markdown');}
+
+// ── KNOWLEDGE GRAPH ───────────────────────────────────────────────────────────
+async function renderGraph(){
+  const [skills,biz,sessions]=await Promise.all([getByType('skill'),getByType('business'),getByType('session')]);
+  document.getElementById('g-learn-count').textContent=skills.length;
+  document.getElementById('g-build-count').textContent=biz.length;
+
+  document.getElementById('g-skills').innerHTML=skills.length
+    ?skills.map(e=>`<span class="graph-node gn-learn" onclick="openEntity('${e.id}')">${e.body?.domain||'?'}</span>`).join('')
+    :'<span style="font-size:12px;color:var(--t3)">none yet</span>';
+
+  document.getElementById('g-biz').innerHTML=biz.length
+    ?biz.map(e=>`<span class="graph-node gn-build" onclick="openEntity('${e.id}')">${e.body?.name||'?'}</span>`).join('')
+    :'<span style="font-size:12px;color:var(--t3)">none yet</span>';
+
+  document.getElementById('g-sessions').innerHTML=sessions.length
+    ?sessions.slice(-12).map(e=>`<span class="graph-node gn-log" onclick="openEntity('${e.id}')">${e.body?.title||'?'}</span>`).join('')
+    :'<span style="font-size:12px;color:var(--t3)">none yet</span>';
+}
+
+// ── ENTITY MODAL ─────────────────────────────────────────────────────────────
+async function openEntity(id){
+  const e=await dGet('entities',id);
+  if(!e) return;
+  currentEntityId=id;
+  document.getElementById('em-type').textContent=e.type+' · '+timeAgo(e.created_at);
+  document.getElementById('em-title').textContent=e.body?.domain||e.body?.name||e.body?.title||id;
+  const f=(label,val)=>val&&val.trim()?`<div style="margin-bottom:12px"><div style="font-size:10px;font-family:var(--mono);color:var(--t3);letter-spacing:.08em;margin-bottom:4px;text-transform:uppercase">${label}</div><div style="white-space:pre-wrap;line-height:1.65">${val}</div></div>`:'';
+  let body='';
+  const b=e.body||{};
+  if(e.type==='skill') body=[f('Principle',b.principle),f('Problem',b.problem),f('Metric',b.metric),f('Breakdown',b.breakdown)].join('');
+  else if(e.type==='business') body=[f('Type',b.type),f('Description',b.desc),f('Capital',b.capital),f('Kill condition',b.kill)].join('');
+  else if(e.type==='session') body=[f('Project',b.project),f('Type',b.type),f('Log',b.log),f('Worked',b.worked),f('Failed',b.failed),f('Decisions',b.decisions),f('Next',b.next)].join('');
+  document.getElementById('em-body').innerHTML=body||'<span style="color:var(--t3)">No details.</span>';
+  document.getElementById('entity-modal').classList.add('on');
+}
+
+async function exportEntityMD(){
+  if(!currentEntityId) return;
+  const e=await dGet('entities',currentEntityId);
+  const b=e.body||{};
+  let md=`# ${b.domain||b.name||b.title||e.id}\n> type: ${e.type} · ${new Date(e.created_at).toISOString().slice(0,10)}\n\n`;
+  Object.entries(b).forEach(([k,v])=>{if(v&&k!=='md') md+=`## ${k}\n${v}\n\n`;});
+  dl(md,(b.domain||b.name||b.title||e.id).replace(/\s+/g,'_')+'.md','text/markdown');
+}
+
+async function deleteEntity(){
+  if(!currentEntityId||!confirm('Delete this entity?')) return;
+  await dDel('entities',currentEntityId);
+  closeModal('entity-modal');currentEntityId=null;renderDash();
+}
+
+// ── EXPORT ────────────────────────────────────────────────────────────────────
+async function exportAll(){
+  const entities=await dAll('entities');
+  const[prios,const_]=await Promise.all([dAll('priorities'),dAll('constitution')]);
+  dl(JSON.stringify({entities,priorities:prios,constitution:const_,exportDate:new Date().toISOString()},null,2),'sovereign_os_'+Date.now()+'.json','application/json');
+}
+
+async function exportSkillsMD(){
+  const skills=await getByType('skill');
+  if(!skills.length){alert('No skills yet.');return;}
+  skills.forEach(s=>{
+    const md=s.body?.md||`# ${s.body?.domain}\n\n## Principle\n${s.body?.principle}`;
+    setTimeout(()=>dl(md,(s.body?.domain||s.id).replace(/\s+/g,'_')+'.md','text/markdown'),100);
+  });
+}
+
+async function clearAll(){
+  if(!confirm('Delete everything? Permanent.')) return;
+  ['entities','patterns','priorities','constitution'].forEach(s=>db.transaction(s,'readwrite').objectStore(s).clear());
+  renderDash();
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+function closeModal(id){document.getElementById(id).classList.remove('on');}
+function timeAgo(ts){const d=Date.now()-ts;if(d<60000)return 'just now';if(d<3600000)return Math.floor(d/60000)+'m ago';if(d<86400000)return Math.floor(d/3600000)+'h ago';return Math.floor(d/86400000)+'d ago';}
+function dl(content,name,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;a.click();}
+function escHtml(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+initDB().then(()=>{renderDash();learnStage(0);});
+</script>
+</body>
+</html>

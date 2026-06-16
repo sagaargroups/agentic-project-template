@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SLS — Sovereign Learning System</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne+Mono&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080808;
+  --surface: #111111;
+  --border: #1e1e1e;
+  --border-active: #2e2e2e;
+  --amber: #c8972a;
+  --amber-dim: #7a5a18;
+  --amber-glow: rgba(200,151,42,0.08);
+  --red: #c84242;
+  --green: #2ea86e;
+  --teal: #2a8fa8;
+  --text: #e8e4dc;
+  --text-2: #8a8680;
+  --text-3: #4a4844;
+  --mono: 'Syne Mono', monospace;
+  --sans: 'Syne', sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;min-height:100vh;overflow-x:hidden}
+/* LAYOUT */
+#app{display:flex;min-height:100vh}
+#sidebar{width:220px;min-width:220px;border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 0;position:sticky;top:0;height:100vh}
+#main{flex:1;padding:40px;max-width:860px}
+/* SIDEBAR */
+.logo{padding:0 20px 28px;font-size:11px;font-family:var(--mono);color:var(--amber);letter-spacing:.12em;text-transform:uppercase}
+.logo span{display:block;font-size:18px;font-family:var(--sans);font-weight:800;color:var(--text);letter-spacing:-.02em;margin-bottom:4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;color:var(--text-2);font-size:13px;transition:all .15s;border-left:2px solid transparent}
+.nav-item:hover{color:var(--text);background:var(--surface)}
+.nav-item.active{color:var(--amber);border-left-color:var(--amber);background:var(--amber-glow)}
+.nav-icon{width:16px;height:16px;opacity:.7;font-family:var(--mono);font-size:12px;display:flex;align-items:center;justify-content:center}
+.nav-spacer{flex:1}
+.nav-version{padding:16px 20px;font-family:var(--mono);font-size:10px;color:var(--text-3);border-top:1px solid var(--border)}
+/* API status dot */
+.api-dot{width:6px;height:6px;border-radius:50%;background:var(--text-3);display:inline-block;margin-right:6px}
+.api-dot.local{background:var(--amber)}
+.api-dot.remote{background:var(--green)}
+/* VIEWS */
+.view{display:none}
+.view.active{display:block}
+/* PAGE HEADER */
+.page-header{margin-bottom:36px}
+.page-title{font-size:28px;font-weight:800;letter-spacing:-.03em;margin-bottom:6px}
+.page-sub{color:var(--text-2);font-size:13px}
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);padding:24px;margin-bottom:16px}
+.card:hover{border-color:var(--border-active)}
+.card-title{font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text)}
+.card-sub{font-size:12px;color:var(--text-2);line-height:1.6}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;border:1px solid;transition:all .15s;background:transparent;letter-spacing:.01em}
+.btn-primary{border-color:var(--amber);color:var(--amber)}
+.btn-primary:hover{background:var(--amber);color:var(--bg)}
+.btn-ghost{border-color:var(--border-active);color:var(--text-2)}
+.btn-ghost:hover{border-color:var(--text-2);color:var(--text)}
+.btn-danger{border-color:var(--red);color:var(--red)}
+.btn-danger:hover{background:var(--red);color:#fff}
+.btn-sm{padding:6px 14px;font-size:12px}
+/* INPUTS */
+.field{margin-bottom:20px}
+.field label{display:block;font-size:11px;font-family:var(--mono);color:var(--text-2);margin-bottom:8px;letter-spacing:.08em;text-transform:uppercase}
+.field input,.field textarea,.field select{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--sans);font-size:13px;padding:10px 14px;outline:none;transition:border .15s;resize:vertical}
+.field input:focus,.field textarea:focus{border-color:var(--amber)}
+.field textarea{min-height:80px;line-height:1.6}
+/* TRAP GATE CHECKS */
+.gate-check{display:flex;align-items:flex-start;gap:12px;padding:14px;border:1px solid var(--border);margin-bottom:10px;cursor:pointer;transition:all .15s}
+.gate-check:hover{border-color:var(--border-active)}
+.gate-check.checked{border-color:var(--amber);background:var(--amber-glow)}
+.gate-check input[type=checkbox]{width:16px;height:16px;accent-color:var(--amber);margin-top:2px;flex-shrink:0}
+.gate-check-text{font-size:13px;line-height:1.5}
+.gate-check-sub{font-size:11px;color:var(--text-2);margin-top:3px}
+/* TRAP BADGE */
+.trap-fix{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-family:var(--mono);padding:3px 8px;border:1px solid var(--amber-dim);color:var(--amber);margin-bottom:16px;letter-spacing:.06em}
+/* PROGRESS */
+.progress-bar{display:flex;gap:4px;margin-bottom:32px}
+.progress-step{flex:1;height:3px;background:var(--border);transition:background .3s}
+.progress-step.done{background:var(--amber)}
+.progress-step.active{background:var(--amber-dim)}
+.stage-label{font-family:var(--mono);font-size:10px;color:var(--text-3);margin-bottom:6px;letter-spacing:.1em;text-transform:uppercase}
+.stage-title{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-bottom:8px}
+.stage-desc{font-size:13px;color:var(--text-2);margin-bottom:28px;line-height:1.6}
+/* DUAL TRACK */
+.dual-track{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.track-card{background:var(--bg);border:1px solid var(--border);padding:20px}
+.track-label{font-size:10px;font-family:var(--mono);color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
+/* TEACH-BACK TIMER */
+.teachback{background:var(--bg);border:1px solid var(--amber-dim);padding:20px;margin:16px 0}
+.timer-display{font-family:var(--mono);font-size:36px;color:var(--amber);text-align:center;padding:16px}
+.timer-status{text-align:center;font-size:12px;color:var(--text-2);margin-bottom:12px}
+/* SKILL FILE PREVIEW */
+.md-preview{background:#050505;border:1px solid var(--border);padding:20px;font-family:var(--mono);font-size:12px;line-height:1.8;color:var(--text-2);white-space:pre-wrap;max-height:340px;overflow-y:auto}
+/* LIBRARY */
+.skill-item{border:1px solid var(--border);padding:20px;margin-bottom:12px;cursor:pointer;transition:all .15s;display:flex;justify-content:space-between;align-items:flex-start}
+.skill-item:hover{border-color:var(--amber);background:var(--amber-glow)}
+.skill-domain{font-size:15px;font-weight:600;margin-bottom:4px}
+.skill-meta{font-size:11px;font-family:var(--mono);color:var(--text-3)}
+.skill-tag{display:inline-block;font-size:10px;font-family:var(--mono);padding:2px 8px;border:1px solid var(--border-active);color:var(--text-3);margin-right:6px}
+/* HISTORY */
+.session-row{display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--border);font-size:13px}
+.session-stage{font-family:var(--mono);font-size:10px;color:var(--text-3);width:80px}
+.session-domain{flex:1;font-weight:600}
+.session-date{font-family:var(--mono);font-size:11px;color:var(--text-3)}
+.status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.status-active{background:var(--amber)}
+.status-done{background:var(--green)}
+.status-rejected{background:var(--red)}
+/* SETTINGS */
+.setting-row{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid var(--border)}
+.setting-label{font-size:13px;font-weight:600}
+.setting-desc{font-size:11px;color:var(--text-2);margin-top:3px}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border-active);padding:32px;width:560px;max-width:90vw;max-height:80vh;overflow-y:auto}
+.modal-title{font-size:18px;font-weight:800;margin-bottom:6px}
+.modal-sub{font-size:12px;color:var(--text-2);margin-bottom:24px}
+/* CHALLENGE BOX */
+.challenge{border-left:3px solid var(--red);padding:12px 16px;background:rgba(200,66,66,.05);margin:10px 0}
+.challenge-label{font-size:10px;font-family:var(--mono);color:var(--red);margin-bottom:6px;letter-spacing:.08em}
+.challenge-text{font-size:13px;line-height:1.5}
+/* STATS */
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px}
+.stat-card{background:var(--surface);border:1px solid var(--border);padding:20px}
+.stat-val{font-size:32px;font-weight:800;color:var(--amber);font-family:var(--mono);margin-bottom:4px}
+.stat-label{font-size:11px;color:var(--text-2)}
+/* ALERT */
+.alert{padding:12px 16px;border:1px solid;font-size:12px;margin-bottom:16px;display:none}
+.alert.show{display:block}
+.alert-warn{border-color:var(--amber-dim);color:var(--amber);background:var(--amber-glow)}
+.alert-err{border-color:var(--red);color:var(--red)}
+/* EMPTY STATE */
+.empty{text-align:center;padding:60px 20px;color:var(--text-3);font-size:13px}
+.empty-icon{font-size:32px;margin-bottom:12px;opacity:.3}
+/* ROW UTILS */
+.row{display:flex;gap:12px;align-items:center}
+.row-between{display:flex;justify-content:space-between;align-items:center}
+.mt-8{margin-top:8px}
+.mt-16{margin-top:16px}
+.mt-24{margin-top:24px}
+.text-amber{color:var(--amber)}
+.text-sm{font-size:12px;color:var(--text-2)}
+.mono{font-family:var(--mono)}
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border-active)}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- SIDEBAR -->
+  <nav id="sidebar">
+    <div class="logo"><span>SLS</span>Sovereign Learning</div>
+    <div class="nav-item active" onclick="nav('dashboard')"><span class="nav-icon">◈</span> Dashboard</div>
+    <div class="nav-item" onclick="nav('session')"><span class="nav-icon">+</span> New Session</div>
+    <div class="nav-item" onclick="nav('library')"><span class="nav-icon">◉</span> Skill Library</div>
+    <div class="nav-item" onclick="nav('history')"><span class="nav-icon">≡</span> History</div>
+    <div class="nav-spacer"></div>
+    <div class="nav-item" onclick="nav('settings')"><span class="nav-icon">⚙</span> Settings</div>
+    <div class="nav-version">
+      <span class="api-dot local" id="api-dot"></span>
+      <span id="api-label">local / indexdb</span><br>
+      <span style="color:var(--text-3);margin-top:4px;display:block">v1.0.0</span>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main id="main">
+
+    <!-- DASHBOARD -->
+    <div class="view active" id="v-dashboard">
+      <div class="page-header">
+        <div class="page-title">Command center</div>
+        <div class="page-sub">Your sovereign learning operating system</div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-val" id="st-sessions">0</div><div class="stat-label">Sessions run</div></div>
+        <div class="stat-card"><div class="stat-val" id="st-skills">0</div><div class="stat-label">Skill files built</div></div>
+        <div class="stat-card"><div class="stat-val" id="st-rejected">0</div><div class="stat-label">Gate rejections</div></div>
+      </div>
+      <div class="row-between" style="margin-bottom:16px">
+        <div style="font-size:13px;font-weight:600">Active sessions</div>
+        <button class="btn btn-primary btn-sm" onclick="nav('session')">+ New session</button>
+      </div>
+      <div id="active-sessions"></div>
+      <div style="font-size:13px;font-weight:600;margin:28px 0 16px">Recent skill files</div>
+      <div id="recent-skills"></div>
+    </div>
+
+    <!-- NEW SESSION WIZARD -->
+    <div class="view" id="v-session">
+      <div class="page-header row-between">
+        <div>
+          <div class="page-title" id="wiz-domain-title">New session</div>
+          <div class="page-sub">Follow the system. No skipping stages.</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="nav('dashboard')">✕ Cancel</button>
+      </div>
+
+      <!-- progress -->
+      <div class="progress-bar" id="progress-bar">
+        <div class="progress-step active" id="ps-0"></div>
+        <div class="progress-step" id="ps-1"></div>
+        <div class="progress-step" id="ps-2"></div>
+        <div class="progress-step" id="ps-3"></div>
+        <div class="progress-step" id="ps-4"></div>
+        <div class="progress-step" id="ps-5"></div>
+        <div class="progress-step" id="ps-6"></div>
+        <div class="progress-step" id="ps-7"></div>
+      </div>
+
+      <!-- STAGE 0: GATE -->
+      <div class="stage" id="stage-0">
+        <div class="stage-label">Stage 0 / Gate</div>
+        <div class="stage-title">Entry filter</div>
+        <div class="trap-fix">⚡ TRAP 1 FIX — hard gate. no emotion bypass.</div>
+        <div class="stage-desc">All three must pass. If one fails, this topic is rejected now. You can revisit at the right time.</div>
+
+        <div class="field"><label>What domain or subject do you want to enter?</label>
+        <input type="text" id="g-domain" placeholder="e.g. Machine learning, Negotiation, Calculus..."></div>
+
+        <div id="gate-checks">
+          <div class="gate-check" onclick="toggleCheck(this,'g-direction')">
+            <input type="checkbox" id="g-direction">
+            <div><div class="gate-check-text">This moves my primary direction forward</div>
+            <div class="gate-check-sub">Not a distraction. Not curiosity without purpose. Directly advances where I'm going.</div></div>
+          </div>
+          <div class="gate-check" onclick="toggleCheck(this,'g-timing')">
+            <input type="checkbox" id="g-timing">
+            <div><div class="gate-check-text">The timing is right — not forced, not delayed</div>
+            <div class="gate-check-sub">I'm not entering too early (no context) or too late (already past the point of use).</div></div>
+          </div>
+          <div class="gate-check" onclick="toggleCheck(this,'g-cost')">
+            <input type="checkbox" id="g-cost">
+            <div><div class="gate-check-text">I have accepted the real cost — time, energy, attention</div>
+            <div class="gate-check-sub">Not the hoped cost. The real cost. And I'm choosing it anyway.</div></div>
+          </div>
+        </div>
+
+        <div class="field mt-16"><label>Write your hard rule (one sentence — non-negotiable)</label>
+        <input type="text" id="g-rule" placeholder="e.g. If I cannot use this in the next 30 days, I do not enter."></div>
+
+        <div class="alert alert-err" id="gate-err">All three checks must pass before entry.</div>
+        <div class="row mt-16">
+          <button class="btn btn-primary" onclick="gateNext()">Pass gate →</button>
+          <button class="btn btn-danger btn-sm" onclick="rejectSession()">Reject this topic</button>
+        </div>
+      </div>
+
+      <!-- STAGE 1: DOMAIN ORIENTATION -->
+      <div class="stage" id="stage-1" style="display:none">
+        <div class="stage-label">Stage 1 / Domain orientation</div>
+        <div class="stage-title">Operate first. Learn second.</div>
+        <div class="stage-desc">Define what this domain demands before you research anything. Every resource and skill you build must serve this operating reality.</div>
+
+        <div class="field"><label>Operating checklist — what must be done regularly in this domain?</label>
+        <textarea id="d-checklist" placeholder="List recurring tasks ordered by frequency first, consequence second. These are the things this domain will demand from you repeatedly."></textarea></div>
+
+        <div class="field"><label>Top 20 vocabulary — minimum viable language</label>
+        <textarea id="d-vocab" placeholder="The 20 terms that appear in 80% of conversations and decisions in this domain. Without these you are always translating. With them you think natively."></textarea></div>
+
+        <div class="field"><label>Mandatory resources — map each to a checklist item</label>
+        <textarea id="d-resources" placeholder="Books, tools, frameworks, people. For each write: WHAT it is → WHY it matters → WHICH checklist item it serves. If it serves no checklist item it is optional not mandatory."></textarea></div>
+
+        <div class="field"><label>Industry best practice — the baseline standard</label>
+        <textarea id="d-bestpractice" placeholder="What separates professional from amateur in this domain? What does everyone serious already know and do? This is your minimum entry standard."></textarea></div>
+
+        <div class="row mt-16">
+          <button class="btn btn-ghost btn-sm" onclick="goStage(0)">← Back</button>
+          <button class="btn btn-primary" onclick="orientNext()">Clarity audit →</button>
+        </div>
+      </div>
+
+      <!-- STAGE 2: CLARITY -->
+      <div class="stage" id="stage-2" style="display:none">
+        <div class="stage-label">Stage 2 / Clarity audit</div>
+        <div class="stage-title">What do you already know?</div>
+        <div class="trap-fix">⚡ TRAP 2 FIX — teach-back test. no self-deception.</div>
+        <div class="stage-desc">Map your existing knowledge honestly. Then prove it with the 2-minute teach-back test below.</div>
+
+        <div class="field"><label>List everything you already know about this domain</label>
+        <textarea id="c-known" placeholder="Write it out. Don't filter. Just dump everything you think you know about this domain..."></textarea></div>
+
+        <div class="field"><label>What are the specific gaps — what you don't know?</label>
+        <textarea id="c-gaps" placeholder="Be specific. Vague gaps = vague learning. 'I don't understand X' not 'I don't know everything'..."></textarea></div>
+
+        <!-- TEACH-BACK -->
+        <div class="teachback">
+          <div class="row-between">
+            <div>
+              <div style="font-size:13px;font-weight:600;margin-bottom:4px">Teach-back test</div>
+              <div class="text-sm">Explain your existing knowledge out loud in 2 minutes — no notes. If you stumble, that's a gap.</div>
+            </div>
+            <button class="btn btn-ghost btn-sm" id="timer-btn" onclick="startTimer()">Start timer</button>
+          </div>
+          <div class="timer-display" id="timer-display">2:00</div>
+          <div class="timer-status" id="timer-status">Press start when you begin speaking</div>
+          <div class="field mt-8"><label>After test — what did you discover you don't actually know?</label>
+          <textarea id="c-discovered" placeholder="What stumped you? What sounded hollow when you said it out loud?"></textarea></div>
+        </div>
+
+        <div class="row mt-16">
+          <button class="btn btn-ghost btn-sm" onclick="goStage(0)">← Back</button>
+          <button class="btn btn-primary" onclick="clarityNext()">Build skeleton →</button>
+        </div>
+      </div>
+
+      <!-- STAGE 2: SKELETON -->
+      <div class="stage" id="stage-3" style="display:none">
+        <div class="stage-label">Stage 3 / Skeleton</div>
+        <div class="stage-title">Three questions. Full structure.</div>
+        <div class="stage-desc">Answer these before any research. This is your frame. Everything you learn gets placed on this skeleton.</div>
+
+        <div class="field"><label>What problem made this field/domain necessary?</label>
+        <textarea id="s-problem" placeholder="Why does this domain exist? What gap in reality needed this?"></textarea></div>
+
+        <div class="field"><label>What is the single metric of truth in this domain?</label>
+        <textarea id="s-metric" placeholder="How does this domain measure whether something works? What's its standard of evidence?"></textarea></div>
+
+        <div class="field"><label>Where does this domain break down?</label>
+        <textarea id="s-breakdown" placeholder="Where does the lens stop working? What problems does it fail to solve?"></textarea></div>
+
+        <div class="row mt-16">
+          <button class="btn btn-ghost btn-sm" onclick="goStage(1)">← Back</button>
+          <button class="btn btn-primary" onclick="skeletonNext()">Research →</button>
+        </div>
+      </div>
+
+      <!-- STAGE 3: RESEARCH -->
+      <div class="stage" id="stage-4" style="display:none">
+        <div class="stage-label">Stage 4 / Surgical research</div>
+        <div class="stage-title">Fill the skeleton gaps only</div>
+        <div class="stage-desc">Research based on your gaps from Stage 1 + skeleton questions from Stage 2. Time-box it. Stop when the skeleton is complete.</div>
+
+        <div class="field"><label>Research notes — skeleton gaps filled</label>
+        <textarea id="r-notes" style="min-height:160px" placeholder="Paste notes, key findings, sources. Only what fills a gap. Not general reading."></textarea></div>
+
+        <div class="field"><label>Sources / references</label>
+        <textarea id="r-sources" placeholder="URLs, books, people, experiments. Keep it brief."></textarea></div>
+
+        <div class="field"><label>What did you find that surprised you? (cross-domain patterns)</label>
+        <textarea id="r-surprises" placeholder="Any pattern that connects this to another domain you already know?"></textarea></div>
+
+        <div class="row mt-16">
+          <button class="btn btn-ghost btn-sm" onclick="goStage(3)">← Back</button>
+          <button class="btn btn-primary" onclick="researchNext()">Compress →</button>
+        </div>
+      </div>
+
+      <!-- STAGE 4: COMPRESS -->
+      <div class="stage" id="stage-5" style="display:none">
+        <div class="stage-label">Stage 5 / Compression</div>
+        <div class="stage-title">One paragraph. No exceptions.</div>
+        <div class="stage-desc">Compress everything — your skeleton + research — into one paragraph of pure principles. If you can't do this, you don't understand it yet. Go back and understand more.</div>
+
+        <div class="field"><label>Compressed principle — one paragraph max</label>
+        <textarea id="comp-text" style="min-height:120px" placeholder="Write it. Then cut it. Then cut it again. Should read like a law, not an essay."></textarea></div>
+
+        <div id="comp-wordcount" class="text-sm mt-8">0 words</div>
+
+        <div class="alert alert-warn mt-8" id="comp-warn" style="display:none">Above 80 words. Compress harder. Cut the description, keep the principle.</div>
+
+        <div class="row mt-16">
+          <button class="btn btn-ghost btn-sm" onclick="goStage(4)">← Back</button>
+          <button class="btn btn-primary" onclick="compressNext()">Run parallel test →</button>
+        </div>
+      </div>
+
+      <!-- STAGE 5: PARALLEL TEST -->
+      <div class="stage" id="stage-6" style="display:none">
+        <div class="stage-label">Stage 6 / Parallel test</div>
+        <div class="stage-title">Theory and practice — simultaneously</div>
+        <div class="stage-desc">Both tracks run at the same time. Minimum 3 practice approaches. Theory uses second-order thinking.</div>
+
+        <div class="dual-track">
+          <div class="track-card">
+            <div class="track-label">Theory track — second order</div>
+            <div class="field"><label>If this principle is true, then what else is true?</label>
+            <textarea id="t-second" placeholder="If X then Y. If Y then Z. Push 3 levels deep."></textarea></div>
+            <div class="field"><label>What would prove this principle wrong?</label>
+            <textarea id="t-falsify" placeholder="What conditions would break this? What counter-evidence would matter?"></textarea></div>
+          </div>
+          <div class="track-card">
+            <div class="track-label">Practice track — 3 approaches</div>
+            <div class="field"><label>Approach 1</label>
+            <textarea id="p-a1" placeholder="How will you apply this? Specific action, context, outcome."></textarea></div>
+            <div class="field"><label>Approach 2</label>
+            <textarea id="p-a2" placeholder="Different angle. Different context. Different method."></textarea></div>
+            <div class="field"><label>Approach 3</label>
+            <textarea id="p-a3" placeholder="The unconventional one. What would the contrarian do?"></textarea></div>
+          </div>
+        </div>
+
+        <!-- TRAP 3 FIX: CHALLENGE MODE -->
+        <div style="border-top:1px solid var(--border);padding-top:20px;margin-top:8px">
+          <div class="row-between" style="margin-bottom:12px">
+            <div>
+              <div style="font-size:13px;font-weight:600">Challenge mode</div>
+              <div class="trap-fix mt-8">⚡ TRAP 3 FIX — teaching needs resistance, not nodding</div>
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="generateChallenges()">Generate challenges</button>
+          </div>
+          <div id="challenges"></div>
+          <div class="field mt-8"><label>Your responses to the challenges</label>
+          <textarea id="p-challenges" placeholder="Answer each challenge directly. Where you struggle = remaining gap."></textarea></div>
+        </div>
+
+        <div class="row mt-16">
+          <button class="btn btn-ghost btn-sm" onclick="goStage(5)">← Back</button>
+          <button class="btn btn-primary" onclick="testNext()">Measure →</button>
+        </div>
+      </div>
+
+      <!-- STAGE 6: MEASURE -->
+      <div class="stage" id="stage-7" style="display:none">
+        <div class="stage-label">Stage 7 / Real world measure</div>
+        <div class="stage-title">What happened?</div>
+        <div class="stage-desc">Be clinical. No ego. This is the most honest stage in the system.</div>
+
+        <div class="field"><label>What worked — and WHY structurally?</label>
+        <textarea id="m-worked" placeholder="Not just 'it worked'. WHY did it work? What principle was confirmed?"></textarea></div>
+
+        <div class="field"><label>What failed — and WHY?</label>
+        <textarea id="m-failed" placeholder="Not 'I made a mistake'. WHY at a structural level did this fail?"></textarea></div>
+
+        <div class="field"><label>Is the failure changeable or fundamental?</label>
+        <select id="m-type">
+          <option value="">Select...</option>
+          <option value="changeable">Changeable — I can adjust the approach</option>
+          <option value="fundamental">Fundamental — this principle does not apply here</option>
+          <option value="na">No failure — all approaches worked</option>
+        </select></div>
+
+        <div id="m-loop-hint" class="alert alert-warn" style="display:none">
+          Changeable failure → loop back to Stage 5 with adjusted approaches. Don't build the skill file yet.
+        </div>
+
+        <div class="field"><label>Net verdict — one sentence</label>
+        <input type="text" id="m-verdict" placeholder="e.g. Principle holds in high-trust contexts, breaks in adversarial ones."></div>
+
+        <div class="row mt-16">
+          <button class="btn btn-ghost btn-sm" onclick="goStage(6)">← Back</button>
+          <button class="btn btn-primary" onclick="measureNext()">Build skill file →</button>
+        </div>
+      </div>
+
+      <!-- STAGE 7: SKILL FILE -->
+      <div class="stage" id="stage-8" style="display:none">
+        <div class="stage-label">Stage 8 / Skill file</div>
+        <div class="stage-title">Store the principle. Clear the clutter.</div>
+        <div class="stage-desc">This is the output. Principles only — not procedures. Trains you, your AI agent, anyone who extends your system.</div>
+
+        <div class="md-preview" id="md-preview"></div>
+
+        <div class="field mt-16"><label>Add anything missing before saving</label>
+        <textarea id="skill-notes" placeholder="Edge cases, warnings, personal context not captured above..."></textarea></div>
+
+        <div class="row mt-16">
+          <button class="btn btn-primary" onclick="saveSkill()">Save to library</button>
+          <button class="btn btn-ghost btn-sm" onclick="exportMD()">Export .md file</button>
+          <button class="btn btn-ghost btn-sm" onclick="goStage(7)">← Back</button>
+        </div>
+
+        <div class="alert alert-warn mt-16" id="save-confirm" style="display:none">
+          ✓ Skill file saved to library. Working memory cleared.
+        </div>
+      </div>
+    </div>
+
+    <!-- SKILL LIBRARY -->
+    <div class="view" id="v-library">
+      <div class="page-header row-between">
+        <div><div class="page-title">Skill library</div><div class="page-sub">Stored principles. Your second brain.</div></div>
+        <input type="text" id="skill-search" placeholder="Search domains..." style="background:var(--surface);border:1px solid var(--border);color:var(--text);padding:8px 14px;font-family:var(--sans);font-size:13px;width:200px" oninput="renderLibrary()">
+      </div>
+      <div id="library-list"></div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="view" id="v-history">
+      <div class="page-header"><div class="page-title">Session history</div><div class="page-sub">Every session. Every gate rejection.</div></div>
+      <div id="history-list"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="view" id="v-settings">
+      <div class="page-header"><div class="page-title">Settings</div><div class="page-sub">Configure storage, API, MCP endpoints for V2.</div></div>
+
+      <div class="card" style="border-color:var(--amber-dim)">
+        <div class="card-title text-amber">V1 — Local mode active</div>
+        <div class="card-sub">All data stored in browser IndexDB. Export skill files as .md anytime. No backend required.</div>
+      </div>
+
+      <div class="setting-row">
+        <div><div class="setting-label">Storage mode</div><div class="setting-desc">Switch between local IndexDB and remote backend</div></div>
+        <select id="storage-mode" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 12px;font-family:var(--sans)" onchange="updateStorage()">
+          <option value="local">Local (IndexDB) — V1</option>
+          <option value="remote">Remote (API) — V2</option>
+        </select>
+      </div>
+
+      <div id="api-config" style="display:none">
+        <div class="setting-row">
+          <div><div class="setting-label">Backend base URL</div><div class="setting-desc">Your V2 serverless API endpoint</div></div>
+          <input type="text" id="api-url" placeholder="https://your-api.com/v1" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 12px;font-family:var(--mono);font-size:12px;width:260px">
+        </div>
+        <div class="setting-row">
+          <div><div class="setting-label">MCP server URL</div><div class="setting-desc">Model context protocol server for agent access</div></div>
+          <input type="text" id="mcp-url" placeholder="https://your-mcp-server.com/mcp" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 12px;font-family:var(--mono);font-size:12px;width:260px">
+        </div>
+        <div class="row mt-16"><button class="btn btn-primary btn-sm" onclick="saveAPIConfig()">Save config</button></div>
+      </div>
+
+      <div class="setting-row">
+        <div><div class="setting-label">Export all data</div><div class="setting-desc">Export all sessions and skill files as JSON</div></div>
+        <button class="btn btn-ghost btn-sm" onclick="exportAll()">Export JSON</button>
+      </div>
+
+      <div class="setting-row">
+        <div><div class="setting-label">Clear all data</div><div class="setting-desc">Wipe local IndexDB — permanent</div></div>
+        <button class="btn btn-danger btn-sm" onclick="clearAllData()">Clear all</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- SKILL MODAL -->
+<div class="modal-overlay" id="skill-modal">
+  <div class="modal">
+    <div class="row-between" style="margin-bottom:16px">
+      <div class="modal-title" id="modal-title"></div>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-sub mono" id="modal-meta"></div>
+    <div class="md-preview" id="modal-content"></div>
+    <div class="row mt-16">
+      <button class="btn btn-ghost btn-sm" onclick="exportModalMD()">Export .md</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteSkill()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DB ──────────────────────────────────────────────────────────────────────
+let db;
+const DB_NAME = 'SLS_V1', DB_VER = 1;
+
+function initDB() {
+  return new Promise((res, rej) => {
+    const req = indexedDB.open(DB_NAME, DB_VER);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains('sessions')) {
+        const s = d.createObjectStore('sessions', {keyPath:'id'});
+        s.createIndex('status','status');
+      }
+      if (!d.objectStoreNames.contains('skills')) {
+        const sk = d.createObjectStore('skills', {keyPath:'id'});
+        sk.createIndex('domain','domain');
+      }
+      if (!d.objectStoreNames.contains('settings')) {
+        d.createObjectStore('settings', {keyPath:'key'});
+      }
+    };
+    req.onsuccess = e => { db = e.target.result; res(db); };
+    req.onerror = () => rej(req.error);
+  });
+}
+
+function dbGet(store, key) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction(store,'readonly');
+    const req = tx.objectStore(store).get(key);
+    req.onsuccess = () => res(req.result);
+    req.onerror = () => rej(req.error);
+  });
+}
+
+function dbPut(store, obj) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction(store,'readwrite');
+    const req = tx.objectStore(store).put(obj);
+    req.onsuccess = () => res(req.result);
+    req.onerror = () => rej(req.error);
+  });
+}
+
+function dbGetAll(store) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction(store,'readonly');
+    const req = tx.objectStore(store).getAll();
+    req.onsuccess = () => res(req.result);
+    req.onerror = () => rej(req.error);
+  });
+}
+
+function dbDelete(store, key) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction(store,'readwrite');
+    const req = tx.objectStore(store).delete(key);
+    req.onsuccess = () => res();
+    req.onerror = () => rej(req.error);
+  });
+}
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let currentStage = 0;
+let currentSession = {};
+let modalSkillId = null;
+let timerInterval = null;
+let timerSeconds = 120;
+
+// ─── NAV ──────────────────────────────────────────────────────────────────────
+function nav(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('v-' + view).classList.add('active');
+  const items = document.querySelectorAll('.nav-item');
+  const map = {dashboard:0, session:1, library:2, history:3, settings:4};
+  if (map[view] !== undefined) items[map[view]].classList.add('active');
+  if (view === 'dashboard') renderDashboard();
+  if (view === 'library') renderLibrary();
+  if (view === 'history') renderHistory();
+  if (view === 'session') resetWizard();
+}
+
+// ─── WIZARD ───────────────────────────────────────────────────────────────────
+function resetWizard() {
+  currentStage = 0;
+  currentSession = {id: Date.now().toString(), timestamp: Date.now(), status:'active'};
+  goStage(0);
+  ['g-domain','g-rule','d-checklist','d-vocab','d-resources','d-bestpractice','c-known','c-gaps','c-discovered','s-problem','s-metric','s-breakdown',
+   'r-notes','r-sources','r-surprises','comp-text','t-second','t-falsify',
+   'p-a1','p-a2','p-a3','p-challenges','m-worked','m-failed','m-verdict','skill-notes']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('m-type').value='';
+  ['g-direction','g-timing','g-cost'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.checked=false;
+    const parent = el ? el.closest('.gate-check') : null;
+    if(parent) parent.classList.remove('checked');
+  });
+  document.getElementById('challenges').innerHTML='';
+  resetTimer();
+}
+
+function goStage(n) {
+  document.querySelectorAll('.stage').forEach(s => s.style.display='none');
+  document.getElementById('stage-'+n).style.display='block';
+  currentStage = n;
+  for(let i=0;i<8;i++) {
+    const el = document.getElementById('ps-'+i);
+    if(!el) continue;
+    el.className = 'progress-step' + (i<n?' done':i===n?' active':'');
+  }
+}
+
+function toggleCheck(el, cbId) {
+  const cb = document.getElementById(cbId);
+  cb.checked = !cb.checked;
+  el.classList.toggle('checked', cb.checked);
+}
+
+// GATE
+function gateNext() {
+  const domain = document.getElementById('g-domain').value.trim();
+  const rule = document.getElementById('g-rule').value.trim();
+  const checks = ['g-direction','g-timing','g-cost'].every(id => document.getElementById(id).checked);
+  const err = document.getElementById('gate-err');
+  if (!domain || !checks || !rule) { err.classList.add('show'); return; }
+  err.classList.remove('show');
+  currentSession.domain = domain;
+  currentSession.gateRule = rule;
+  currentSession.gateTimestamp = Date.now();
+  document.getElementById('wiz-domain-title').textContent = domain;
+  dbPut('sessions', {...currentSession, stage:'clarity'});
+  goStage(1);
+}
+
+function rejectSession() {
+  const domain = document.getElementById('g-domain').value.trim() || 'unnamed';
+  dbPut('sessions', {id: Date.now().toString(), domain, status:'rejected', timestamp: Date.now(), stage:'gate'});
+  nav('dashboard');
+}
+
+
+// ORIENT
+function orientNext() {
+  const checklist = document.getElementById('d-checklist').value.trim();
+  const vocab = document.getElementById('d-vocab').value.trim();
+  if (!checklist || !vocab) { alert('Operating checklist and top 20 vocabulary are required.'); return; }
+  currentSession.operatingChecklist = checklist;
+  currentSession.top20Vocab = vocab;
+  currentSession.mandatoryResources = document.getElementById('d-resources').value;
+  currentSession.bestPractice = document.getElementById('d-bestpractice').value;
+  dbPut('sessions', {...currentSession, stage:'clarity'});
+  goStage(2);
+}
+
+// CLARITY
+function clarityNext() {
+  const known = document.getElementById('c-known').value.trim();
+  const gaps = document.getElementById('c-gaps').value.trim();
+  if (!known || !gaps) { alert('Fill in both what you know and what you don\'t.'); return; }
+  currentSession.clarityKnown = known;
+  currentSession.clarityGaps = gaps;
+  currentSession.clarityDiscovered = document.getElementById('c-discovered').value;
+  dbPut('sessions', {...currentSession, stage:'skeleton'});
+  goStage(3);
+}
+
+// SKELETON
+function skeletonNext() {
+  const fields = ['s-problem','s-metric','s-breakdown'];
+  if (fields.some(f => !document.getElementById(f).value.trim())) {
+    alert('All three skeleton questions must be answered.'); return;
+  }
+  currentSession.skelProblem = document.getElementById('s-problem').value;
+  currentSession.skelMetric = document.getElementById('s-metric').value;
+  currentSession.skelBreakdown = document.getElementById('s-breakdown').value;
+  dbPut('sessions', {...currentSession, stage:'research'});
+  goStage(4);
+}
+
+// RESEARCH
+function researchNext() {
+  if (!document.getElementById('r-notes').value.trim()) {
+    alert('Add at least your research notes before continuing.'); return;
+  }
+  currentSession.resNotes = document.getElementById('r-notes').value;
+  currentSession.resSources = document.getElementById('r-sources').value;
+  currentSession.resSurprises = document.getElementById('r-surprises').value;
+  dbPut('sessions', {...currentSession, stage:'compress'});
+  goStage(5);
+}
+
+// COMPRESS
+document.addEventListener('DOMContentLoaded', () => {
+  const comp = document.getElementById('comp-text');
+  if(comp) comp.addEventListener('input', () => {
+    const words = comp.value.trim().split(/\s+/).filter(Boolean).length;
+    document.getElementById('comp-wordcount').textContent = words + ' words';
+    document.getElementById('comp-warn').style.display = words > 80 ? 'block' : 'none';
+  });
+});
+
+function compressNext() {
+  const text = document.getElementById('comp-text').value.trim();
+  if (!text) { alert('Write the compressed principle first.'); return; }
+  currentSession.principle = text;
+  dbPut('sessions', {...currentSession, stage:'test'});
+  goStage(6);
+}
+
+// PARALLEL TEST — challenge generation
+function generateChallenges() {
+  const p = currentSession.principle || document.getElementById('comp-text').value;
+  const domain = currentSession.domain || 'this domain';
+  const challenges = [
+    {q: `What is the one scenario in ${domain} where this principle completely fails? Be specific.`},
+    {q: `If someone with 20 years of experience in ${domain} read your principle, what would they say is missing?`},
+    {q: `Apply your principle to the opposite of its intended context. Does it still hold? Why or why not?`},
+    {q: `What assumption inside your principle are you least confident about? What would change if that assumption is wrong?`}
+  ];
+  const box = document.getElementById('challenges');
+  box.innerHTML = challenges.map((c,i) => `
+    <div class="challenge">
+      <div class="challenge-label">Challenge ${i+1}</div>
+      <div class="challenge-text">${c.q}</div>
+    </div>`).join('');
+}
+
+function testNext() {
+  const a1 = document.getElementById('p-a1').value.trim();
+  if (!a1) { alert('Add at least Approach 1 to the practice track.'); return; }
+  currentSession.theorySecond = document.getElementById('t-second').value;
+  currentSession.theoryFalsify = document.getElementById('t-falsify').value;
+  currentSession.practiceA1 = document.getElementById('p-a1').value;
+  currentSession.practiceA2 = document.getElementById('p-a2').value;
+  currentSession.practiceA3 = document.getElementById('p-a3').value;
+  currentSession.challengeResponses = document.getElementById('p-challenges').value;
+  dbPut('sessions', {...currentSession, stage:'measure'});
+  goStage(7);
+}
+
+// MEASURE
+document.addEventListener('DOMContentLoaded', () => {
+  const mt = document.getElementById('m-type');
+  if(mt) mt.addEventListener('change', () => {
+    document.getElementById('m-loop-hint').style.display =
+      mt.value === 'changeable' ? 'block' : 'none';
+  });
+});
+
+function measureNext() {
+  if (!document.getElementById('m-worked').value.trim() ||
+      !document.getElementById('m-type').value) {
+    alert('Fill in the measurement before building the skill file.'); return;
+  }
+  currentSession.measureWorked = document.getElementById('m-worked').value;
+  currentSession.measureFailed = document.getElementById('m-failed').value;
+  currentSession.measureType = document.getElementById('m-type').value;
+  currentSession.measureVerdict = document.getElementById('m-verdict').value;
+  currentSession.status = 'complete';
+  dbPut('sessions', {...currentSession, stage:'complete'});
+  buildMDPreview();
+  goStage(8);
+}
+
+// SKILL FILE
+function buildMDPreview() {
+  const s = currentSession;
+  const date = new Date().toISOString().slice(0,10);
+  const md = `# ${s.domain || 'Unnamed Domain'}
+> Generated: ${date} | SLS v1
+
+---
+
+## Core problem
+${s.skelProblem || '—'}
+
+## Metric of truth
+${s.skelMetric || '—'}
+
+## Breakdown point
+${s.skelBreakdown || '—'}
+
+---
+
+## Principle
+${s.principle || '—'}
+
+---
+
+## Second-order effects
+${s.theorySecond || '—'}
+
+## Falsification condition
+${s.theoryFalsify || '—'}
+
+---
+
+## Practice approaches
+**Approach 1:** ${s.practiceA1 || '—'}
+**Approach 2:** ${s.practiceA2 || '—'}
+**Approach 3:** ${s.practiceA3 || '—'}
+
+---
+
+## Real-world result
+**What worked:** ${s.measureWorked || '—'}
+**What failed:** ${s.measureFailed || '—'}
+**Failure type:** ${s.measureType || '—'}
+**Verdict:** ${s.measureVerdict || '—'}
+
+---
+
+## Gate rule applied
+${s.gateRule || '—'}
+
+## Operating checklist
+${s.operatingChecklist || '—'}
+
+## Top 20 vocabulary
+${s.top20Vocab || '—'}
+
+## Mandatory resources
+${s.mandatoryResources || '—'}
+
+## Industry best practice
+${s.bestPractice || '—'}
+
+## Known gaps at entry
+${s.clarityGaps || '—'}
+`;
+  currentSession.md = md;
+  document.getElementById('md-preview').textContent = md;
+  return md;
+}
+
+async function saveSkill() {
+  const notes = document.getElementById('skill-notes').value;
+  if(notes) currentSession.md += `\n## Additional notes\n${notes}`;
+  const skill = {
+    id: currentSession.id,
+    domain: currentSession.domain,
+    principle: currentSession.principle,
+    md: currentSession.md,
+    verdict: currentSession.measureVerdict,
+    timestamp: Date.now()
+  };
+  await dbPut('skills', skill);
+  await dbPut('sessions', {...currentSession, status:'complete', stage:'filed'});
+  document.getElementById('save-confirm').style.display='block';
+}
+
+function exportMD() {
+  const md = currentSession.md || buildMDPreview();
+  downloadFile(md, (currentSession.domain||'skill').replace(/\s+/g,'_')+'_skill.md', 'text/markdown');
+}
+
+// TIMER
+function startTimer() {
+  if(timerInterval) { clearInterval(timerInterval); timerInterval=null; resetTimer(); return; }
+  timerSeconds = 120;
+  document.getElementById('timer-btn').textContent = 'Stop';
+  document.getElementById('timer-status').textContent = 'Speak — no notes. Clock is running.';
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    const m = Math.floor(timerSeconds/60);
+    const s = timerSeconds%60;
+    document.getElementById('timer-display').textContent = m+':'+(s<10?'0':'')+s;
+    if(timerSeconds<=0) {
+      clearInterval(timerInterval); timerInterval=null;
+      document.getElementById('timer-display').textContent = '0:00';
+      document.getElementById('timer-status').textContent = 'Time up. Note what stumped you below.';
+      document.getElementById('timer-btn').textContent = 'Restart';
+    }
+  },1000);
+}
+
+function resetTimer() {
+  if(timerInterval) clearInterval(timerInterval);
+  timerInterval=null; timerSeconds=120;
+  const d = document.getElementById('timer-display');
+  const s = document.getElementById('timer-status');
+  const b = document.getElementById('timer-btn');
+  if(d) d.textContent='2:00';
+  if(s) s.textContent='Press start when you begin speaking';
+  if(b) b.textContent='Start timer';
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────────────────────
+async function renderDashboard() {
+  const [sessions, skills] = await Promise.all([dbGetAll('sessions'), dbGetAll('skills')]);
+  const rejected = sessions.filter(s=>s.status==='rejected').length;
+  document.getElementById('st-sessions').textContent = sessions.filter(s=>s.status!=='rejected').length;
+  document.getElementById('st-skills').textContent = skills.length;
+  document.getElementById('st-rejected').textContent = rejected;
+
+  const active = sessions.filter(s=>s.status==='active').sort((a,b)=>b.timestamp-a.timestamp);
+  const aBox = document.getElementById('active-sessions');
+  if(!active.length) {
+    aBox.innerHTML='<div class="empty"><div class="empty-icon">◈</div>No active sessions. Start one.</div>';
+  } else {
+    aBox.innerHTML = active.map(s=>`
+      <div class="skill-item" onclick="resumeSession('${s.id}')">
+        <div><div class="skill-domain">${s.domain}</div>
+        <div class="skill-meta mono">stage: ${s.stage} · ${timeAgo(s.timestamp)}</div></div>
+        <div class="status-dot status-active"></div>
+      </div>`).join('');
+  }
+
+  const recent = skills.sort((a,b)=>b.timestamp-a.timestamp).slice(0,3);
+  const rBox = document.getElementById('recent-skills');
+  if(!recent.length) {
+    rBox.innerHTML='<div class="empty"><div class="empty-icon">◉</div>No skill files yet. Complete a session.</div>';
+  } else {
+    rBox.innerHTML = recent.map(s=>`
+      <div class="skill-item" onclick="openSkill('${s.id}')">
+        <div><div class="skill-domain">${s.domain}</div>
+        <div class="skill-meta mono">${timeAgo(s.timestamp)}</div></div>
+        <span class="skill-tag">skill</span>
+      </div>`).join('');
+  }
+}
+
+// ─── LIBRARY ──────────────────────────────────────────────────────────────────
+async function renderLibrary() {
+  const skills = await dbGetAll('skills');
+  const q = (document.getElementById('skill-search')||{}).value||'';
+  const filtered = q ? skills.filter(s=>s.domain.toLowerCase().includes(q.toLowerCase())) : skills;
+  const box = document.getElementById('library-list');
+  if(!filtered.length) {
+    box.innerHTML='<div class="empty"><div class="empty-icon">◉</div>'+(q?'No match.':'Library empty. Complete a session.')+'</div>';
+    return;
+  }
+  box.innerHTML = filtered.sort((a,b)=>b.timestamp-a.timestamp).map(s=>`
+    <div class="skill-item" onclick="openSkill('${s.id}')">
+      <div>
+        <div class="skill-domain">${s.domain}</div>
+        <div class="skill-meta mono">${timeAgo(s.timestamp)}</div>
+        <div class="text-sm mt-8" style="margin-top:8px">${(s.principle||'').slice(0,120)}${(s.principle||'').length>120?'...':''}</div>
+      </div>
+      <span class="skill-tag">md</span>
+    </div>`).join('');
+}
+
+// ─── HISTORY ─────────────────────────────────────────────────────────────────
+async function renderHistory() {
+  const sessions = await dbGetAll('sessions');
+  const box = document.getElementById('history-list');
+  if(!sessions.length) { box.innerHTML='<div class="empty">No sessions yet.</div>'; return; }
+  box.innerHTML = sessions.sort((a,b)=>b.timestamp-a.timestamp).map(s=>`
+    <div class="session-row">
+      <div class="status-dot ${s.status==='complete'||s.status==='filed'?'status-done':s.status==='rejected'?'status-rejected':'status-active'}"></div>
+      <div class="session-domain">${s.domain||'unnamed'}</div>
+      <div class="session-stage mono">${s.stage||'—'}</div>
+      <div class="session-date mono">${timeAgo(s.timestamp)}</div>
+    </div>`).join('');
+}
+
+// ─── SKILL MODAL ─────────────────────────────────────────────────────────────
+async function openSkill(id) {
+  const skill = await dbGet('skills', id);
+  if(!skill) return;
+  modalSkillId = id;
+  document.getElementById('modal-title').textContent = skill.domain;
+  document.getElementById('modal-meta').textContent = timeAgo(skill.timestamp);
+  document.getElementById('modal-content').textContent = skill.md;
+  document.getElementById('skill-modal').classList.add('open');
+}
+
+function closeModal() { document.getElementById('skill-modal').classList.remove('open'); }
+
+async function deleteSkill() {
+  if(!modalSkillId) return;
+  if(!confirm('Delete this skill file permanently?')) return;
+  await dbDelete('skills', modalSkillId);
+  closeModal(); renderLibrary();
+}
+
+function exportModalMD() {
+  const title = document.getElementById('modal-title').textContent;
+  const content = document.getElementById('modal-content').textContent;
+  downloadFile(content, title.replace(/\s+/g,'_')+'_skill.md', 'text/markdown');
+}
+
+// ─── SESSION RESUME ──────────────────────────────────────────────────────────
+async function resumeSession(id) {
+  const s = await dbGet('sessions', id);
+  if(!s) return;
+  currentSession = s;
+  nav('session');
+  const stageMap = {gate:0,orient:1,clarity:2,skeleton:3,research:4,compress:5,test:6,measure:7,complete:8};
+  const n = stageMap[s.stage] || 0;
+  // Restore fields
+  if(s.domain) document.getElementById('g-domain').value = s.domain;
+  if(s.gateRule) document.getElementById('g-rule').value = s.gateRule;
+  if(s.clarityKnown) document.getElementById('c-known').value = s.clarityKnown;
+  if(s.clarityGaps) document.getElementById('c-gaps').value = s.clarityGaps;
+  if(s.skelProblem) document.getElementById('s-problem').value = s.skelProblem;
+  if(s.skelMetric) document.getElementById('s-metric').value = s.skelMetric;
+  if(s.skelBreakdown) document.getElementById('s-breakdown').value = s.skelBreakdown;
+  if(s.resNotes) document.getElementById('r-notes').value = s.resNotes;
+  if(s.principle) document.getElementById('comp-text').value = s.principle;
+  document.getElementById('wiz-domain-title').textContent = s.domain||'Session';
+  goStage(n);
+}
+
+// ─── SETTINGS ────────────────────────────────────────────────────────────────
+function updateStorage() {
+  const mode = document.getElementById('storage-mode').value;
+  document.getElementById('api-config').style.display = mode==='remote'?'block':'none';
+  const dot = document.getElementById('api-dot');
+  const label = document.getElementById('api-label');
+  dot.className = 'api-dot ' + (mode==='remote'?'remote':'local');
+  label.textContent = mode==='remote'?'remote / api':'local / indexdb';
+}
+
+function saveAPIConfig() {
+  const url = document.getElementById('api-url').value;
+  const mcp = document.getElementById('mcp-url').value;
+  dbPut('settings',{key:'apiUrl',value:url});
+  dbPut('settings',{key:'mcpUrl',value:mcp});
+  alert('Config saved. Build your V2 backend using the BACKEND_GUIDE.md to connect here.');
+}
+
+async function exportAll() {
+  const [sessions,skills] = await Promise.all([dbGetAll('sessions'),dbGetAll('skills')]);
+  downloadFile(JSON.stringify({sessions,skills,exportDate:new Date().toISOString()},null,2),
+    'sls_export_'+Date.now()+'.json','application/json');
+}
+
+async function clearAllData() {
+  if(!confirm('Delete ALL sessions and skill files? This cannot be undone.')) return;
+  const stores = ['sessions','skills','settings'];
+  for(const store of stores) {
+    const tx = db.transaction(store,'readwrite');
+    tx.objectStore(store).clear();
+  }
+  renderDashboard();
+  alert('All data cleared.');
+}
+
+// ─── UTILS ───────────────────────────────────────────────────────────────────
+function timeAgo(ts) {
+  const d = Date.now()-ts;
+  if(d<60000) return 'just now';
+  if(d<3600000) return Math.floor(d/60000)+'m ago';
+  if(d<86400000) return Math.floor(d/3600000)+'h ago';
+  return Math.floor(d/86400000)+'d ago';
+}
+
+function downloadFile(content, filename, type) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content],{type}));
+  a.download = filename;
+  a.click();
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+initDB().then(() => {
+  renderDashboard();
+});
+</script>
+</body>
+</html>

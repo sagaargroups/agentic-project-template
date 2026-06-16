@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BFS — Business Framework System</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne+Mono&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080808;--surface:#111;--border:#1e1e1e;--border-a:#2e2e2e;--amber:#c8972a;--amber-dim:#7a5a18;--amber-glow:rgba(200,151,42,.08);--red:#c84242;--green:#2ea86e;--teal:#2a8fa8;--purple:#8a6fc8;--text:#e8e4dc;--t2:#8a8680;--t3:#4a4844;--mono:'Syne Mono',monospace;--sans:'Syne',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;min-height:100vh;overflow-x:hidden}
+#app{display:flex;min-height:100vh}
+#sidebar{width:220px;min-width:220px;border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 0;position:sticky;top:0;height:100vh;overflow-y:auto}
+#main{flex:1;padding:40px;max-width:900px}
+.logo{padding:0 20px 28px;font-size:11px;font-family:var(--mono);color:var(--amber);letter-spacing:.12em;text-transform:uppercase}
+.logo span{display:block;font-size:18px;font-family:var(--sans);font-weight:800;color:var(--text);letter-spacing:-.02em;margin-bottom:4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;color:var(--t2);font-size:13px;transition:all .15s;border-left:2px solid transparent}
+.nav-item:hover{color:var(--text);background:var(--surface)}
+.nav-item.active{color:var(--amber);border-left-color:var(--amber);background:var(--amber-glow)}
+.nav-spacer{flex:1}
+.nav-ver{padding:16px 20px;font-family:var(--mono);font-size:10px;color:var(--t3);border-top:1px solid var(--border)}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:6px}
+.dot-local{background:var(--amber)}.dot-remote{background:var(--green)}
+.view{display:none}.view.active{display:block}
+.ph{margin-bottom:36px}
+.pt{font-size:28px;font-weight:800;letter-spacing:-.03em;margin-bottom:6px}
+.ps{color:var(--t2);font-size:13px}
+.card{background:var(--surface);border:1px solid var(--border);padding:20px;margin-bottom:14px}
+.card:hover{border-color:var(--border-a)}
+.ct{font-size:13px;font-weight:600;margin-bottom:6px}
+.cs{font-size:12px;color:var(--t2);line-height:1.6}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;border:1px solid;transition:all .15s;background:transparent}
+.btn-p{border-color:var(--amber);color:var(--amber)}.btn-p:hover{background:var(--amber);color:var(--bg)}
+.btn-g{border-color:var(--border-a);color:var(--t2)}.btn-g:hover{border-color:var(--t2);color:var(--text)}
+.btn-d{border-color:var(--red);color:var(--red)}.btn-d:hover{background:var(--red);color:#fff}
+.btn-s{border-color:var(--green);color:var(--green)}.btn-s:hover{background:var(--green);color:var(--bg)}
+.btn-sm{padding:6px 14px;font-size:12px}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:11px;font-family:var(--mono);color:var(--t2);margin-bottom:7px;letter-spacing:.08em;text-transform:uppercase}
+.field input,.field textarea,.field select{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--sans);font-size:13px;padding:10px 14px;outline:none;transition:border .15s;resize:vertical}
+.field input:focus,.field textarea:focus{border-color:var(--amber)}
+.field textarea{min-height:80px;line-height:1.6}
+.row{display:flex;gap:12px;align-items:center}
+.rb{display:flex;justify-content:space-between;align-items:center}
+.mt8{margin-top:8px}.mt16{margin-top:16px}.mt24{margin-top:24px}
+.alert{padding:12px 16px;border:1px solid;font-size:12px;margin-bottom:14px}
+.alert-w{border-color:var(--amber-dim);color:var(--amber);background:var(--amber-glow)}
+.alert-e{border-color:var(--red);color:var(--red)}
+.alert-g{border-color:var(--green);color:var(--green);background:rgba(46,168,110,.06)}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-family:var(--mono);padding:3px 8px;border:1px solid;letter-spacing:.06em}
+.badge-a{border-color:var(--amber-dim);color:var(--amber)}
+.badge-r{border-color:var(--red);color:var(--red)}
+.badge-g{border-color:var(--green);color:var(--green)}
+.badge-p{border-color:var(--purple);color:var(--purple)}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:32px}
+.stat{background:var(--surface);border:1px solid var(--border);padding:18px}
+.sv{font-size:28px;font-weight:800;color:var(--amber);font-family:var(--mono);margin-bottom:4px}
+.sl{font-size:11px;color:var(--t2)}
+.tabs{display:flex;gap:0;margin-bottom:24px;border-bottom:1px solid var(--border)}
+.tab{padding:10px 20px;font-size:13px;cursor:pointer;color:var(--t2);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--amber);border-bottom-color:var(--amber)}
+.tab-content{display:none}.tab-content.active{display:block}
+.phase-bar{display:flex;gap:3px;margin-bottom:28px}
+.phase-step{flex:1;height:4px;background:var(--border);transition:background .3s;position:relative}
+.phase-step.done{background:var(--green)}.phase-step.active{background:var(--amber)}
+.sl-label{font-size:10px;font-family:var(--mono);color:var(--t3);margin-bottom:6px;letter-spacing:.1em;text-transform:uppercase}
+.sl-title{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-bottom:8px}
+.sl-desc{font-size:13px;color:var(--t2);margin-bottom:24px;line-height:1.6}
+.param-locked{opacity:.4;pointer-events:none;position:relative}
+.param-locked::after{content:'🔒 Complete survival params first';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;color:var(--t2);white-space:nowrap}
+.param-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:var(--surface);border:1px solid var(--border);cursor:pointer;margin-bottom:1px}
+.param-header:hover{border-color:var(--amber)}
+.param-header.open{border-color:var(--amber);background:var(--amber-glow)}
+.param-body{border:1px solid var(--border);border-top:none;padding:20px;display:none}
+.param-body.open{display:block}
+.param-num{font-family:var(--mono);font-size:11px;color:var(--t3);width:24px}
+.param-name{font-size:13px;font-weight:600;flex:1}
+.param-status{font-size:10px;font-family:var(--mono)}
+.survival-flag{font-size:10px;font-family:var(--mono);color:var(--red);padding:2px 6px;border:1px solid var(--red)}
+.biz-card{border:1px solid var(--border);padding:18px;margin-bottom:10px;cursor:pointer;transition:all .15s;display:flex;justify-content:space-between;align-items:flex-start}
+.biz-card:hover{border-color:var(--amber-dim)}
+.biz-name{font-size:14px;font-weight:600;margin-bottom:4px}
+.biz-meta{font-size:11px;font-family:var(--mono);color:var(--t3)}
+.kill-box{border:1px solid var(--red);padding:16px;margin-top:12px;background:rgba(200,66,66,.04)}
+.kill-label{font-size:10px;font-family:var(--mono);color:var(--red);margin-bottom:8px;letter-spacing:.08em}
+.audit-trigger{display:flex;align-items:center;gap:12px;padding:12px 16px;border:1px solid var(--border);margin-bottom:8px;cursor:pointer;transition:all .15s}
+.audit-trigger:hover{border-color:var(--border-a)}
+.audit-trigger.active{border-color:var(--amber);background:var(--amber-glow)}
+.audit-trigger input[type=checkbox]{accent-color:var(--amber)}
+.score-bar{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.score-label{font-size:12px;width:160px;color:var(--t2)}
+.score-track{flex:1;height:4px;background:var(--border)}
+.score-fill{height:4px;background:var(--amber);transition:width .3s}
+.score-val{font-family:var(--mono);font-size:12px;color:var(--amber);width:30px;text-align:right}
+.connection-card{border:1px solid var(--border);padding:16px;margin-bottom:10px}
+.conn-status{font-size:10px;font-family:var(--mono);padding:2px 8px;border:1px solid}
+.conn-hypothesis{border-color:var(--t3);color:var(--t3)}
+.conn-testing{border-color:var(--amber-dim);color:var(--amber)}
+.conn-validated{border-color:var(--green);color:var(--green)}
+.md-prev{background:#050505;border:1px solid var(--border);padding:18px;font-family:var(--mono);font-size:12px;line-height:1.8;color:var(--t2);white-space:pre-wrap;max-height:320px;overflow-y:auto}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border-a);padding:28px;width:580px;max-width:92vw;max-height:82vh;overflow-y:auto}
+.empty{text-align:center;padding:48px 20px;color:var(--t3);font-size:13px}
+.empty-i{font-size:28px;margin-bottom:10px;opacity:.3}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border-a)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.section-title{font-size:11px;font-family:var(--mono);color:var(--t3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+</style>
+</head>
+<body>
+<div id="app">
+<nav id="sidebar">
+  <div class="logo"><span>BFS</span>Business Framework</div>
+  <div class="nav-item active" onclick="nav('dashboard')"><span style="font-size:12px">◈</span> Dashboard</div>
+  <div class="nav-item" onclick="nav('explore')"><span style="font-size:12px">⊕</span> Explore</div>
+  <div class="nav-item" onclick="nav('assessment')"><span style="font-size:12px">◎</span> Self-Assessment</div>
+  <div class="nav-item" onclick="nav('priority')"><span style="font-size:12px">≡</span> Priority & Systems</div>
+  <div class="nav-item" onclick="nav('constitution')"><span style="font-size:12px">◉</span> Constitution</div>
+  <div class="nav-item" onclick="nav('ecosystem')"><span style="font-size:12px">⬡</span> Ecosystem</div>
+  <div class="nav-spacer"></div>
+  <div class="nav-item" onclick="nav('settings')"><span style="font-size:12px">⚙</span> Settings</div>
+  <div class="nav-ver"><span class="dot dot-local" id="api-dot"></span><span id="api-label">local / indexdb</span><br><span style="color:var(--t3);margin-top:4px;display:block">v1.0.0</span></div>
+</nav>
+
+<main id="main">
+
+<!-- DASHBOARD -->
+<div class="view active" id="v-dashboard">
+  <div class="ph"><div class="pt">Command center</div><div class="ps">Business ecosystem framework — think tank department</div></div>
+  <div class="stat-grid">
+    <div class="stat"><div class="sv" id="st-biz">0</div><div class="sl">Businesses mapped</div></div>
+    <div class="stat"><div class="sv" id="st-active">0</div><div class="sl">Active builds</div></div>
+    <div class="stat"><div class="sv" id="st-score">—</div><div class="sl">Readiness score</div></div>
+    <div class="stat"><div class="sv" id="st-audit">—</div><div class="sl">Last audit</div></div>
+  </div>
+  <div id="audit-alerts"></div>
+  <div class="rb" style="margin-bottom:14px"><div style="font-size:13px;font-weight:600">Active businesses</div><button class="btn btn-p btn-sm" onclick="nav('explore')">+ Add business</button></div>
+  <div id="dash-biz-list"></div>
+</div>
+
+<!-- EXPLORE -->
+<div class="view" id="v-explore">
+  <div class="ph rb"><div><div class="pt">Deep exploration</div><div class="ps">Store every business idea before assessing fit</div></div></div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab(this,'t-s1')">Strategy 1 — Serve Demand</div>
+    <div class="tab" onclick="switchTab(this,'t-s2')">Strategy 2 — Create Market</div>
+  </div>
+  <div class="tab-content active" id="t-s1">
+    <div class="alert alert-w" style="margin-bottom:20px">Strategy 1 — Data-based. Proven demand exists. Lower risk. Faster cash flow. Enter only when research confirms real buyers.</div>
+    <div id="list-s1"></div>
+    <button class="btn btn-p btn-sm mt16" onclick="openBizModal('s1')">+ Add S1 business</button>
+  </div>
+  <div class="tab-content" id="t-s2">
+    <div class="alert alert-w" style="margin-bottom:20px">Strategy 2 — Psychology-based. Create demand that doesn't exist. Higher risk. Longer timeline. Enter only with capital buffer + deep domain expertise.</div>
+    <div id="list-s2"></div>
+    <button class="btn btn-p btn-sm mt16" onclick="openBizModal('s2')">+ Add S2 business</button>
+  </div>
+</div>
+
+<!-- SELF-ASSESSMENT -->
+<div class="view" id="v-assessment">
+  <div class="ph rb">
+    <div><div class="pt">Self-assessment</div><div class="ps">Your state determines your strategy — not your ambition</div></div>
+    <button class="btn btn-p btn-sm" onclick="saveAssessment()">Save audit</button>
+  </div>
+  <div class="alert alert-w" id="audit-due-alert" style="display:none">⚡ Audit overdue or trigger event detected. Update your state before making any new decisions.</div>
+
+  <!-- AUDIT TRIGGERS -->
+  <div style="margin-bottom:24px">
+    <div class="section-title">Audit schedule — when to reassess</div>
+    <div class="two-col" style="margin-bottom:12px">
+      <div>
+        <div class="audit-trigger" onclick="toggleTrigger(this,'tr-monthly')"><input type="checkbox" id="tr-monthly"> <div><div style="font-size:13px;font-weight:600">Monthly recurring</div><div style="font-size:11px;color:var(--t2)">First day of every month</div></div></div>
+        <div class="audit-trigger" onclick="toggleTrigger(this,'tr-quarterly')"><input type="checkbox" id="tr-quarterly"> <div><div style="font-size:13px;font-weight:600">Quarterly recurring</div><div style="font-size:11px;color:var(--t2)">Every 3 months</div></div></div>
+        <div class="audit-trigger" onclick="toggleTrigger(this,'tr-capital')"><input type="checkbox" id="tr-capital"> <div><div style="font-size:13px;font-weight:600">Capital drops 30%+</div><div style="font-size:11px;color:var(--t2)">Triggered automatically when updated</div></div></div>
+      </div>
+      <div>
+        <div class="audit-trigger" onclick="toggleTrigger(this,'tr-newbiz')"><input type="checkbox" id="tr-newbiz"> <div><div style="font-size:13px;font-weight:600">New business entry</div><div style="font-size:11px;color:var(--t2)">Before every Priority #1 change</div></div></div>
+        <div class="audit-trigger" onclick="toggleTrigger(this,'tr-failure')"><input type="checkbox" id="tr-failure"> <div><div style="font-size:13px;font-weight:600">Business failure event</div><div style="font-size:11px;color:var(--t2)">Immediate re-audit after kill decision</div></div></div>
+        <div class="audit-trigger" onclick="toggleTrigger(this,'tr-custom')"><input type="checkbox" id="tr-custom"> <div><div style="font-size:13px;font-weight:600">Custom interval</div><div style="font-size:11px;color:var(--t2)"><input type="number" id="tr-custom-days" placeholder="days" style="width:60px;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:2px 6px;font-size:11px" onclick="event.stopPropagation()"> days</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCORING -->
+  <div class="section-title">State scoring — be brutal, not optimistic</div>
+  <div id="score-items">
+    <div class="score-bar"><div class="score-label">Capital available</div><input type="range" min="1" max="10" value="5" class="score-range" data-key="capital" oninput="updateScore(this)" style="flex:1;accent-color:var(--amber)"><div class="score-val" id="sv-capital">5</div></div>
+    <div class="score-bar"><div class="score-label">Time freedom (runway)</div><input type="range" min="1" max="10" value="5" class="score-range" data-key="time" oninput="updateScore(this)" style="flex:1;accent-color:var(--amber)"><div class="score-val" id="sv-time">5</div></div>
+    <div class="score-bar"><div class="score-label">Skill match</div><input type="range" min="1" max="10" value="5" class="score-range" data-key="skill" oninput="updateScore(this)" style="flex:1;accent-color:var(--amber)"><div class="score-val" id="sv-skill">5</div></div>
+    <div class="score-bar"><div class="score-label">Risk capacity</div><input type="range" min="1" max="10" value="5" class="score-range" data-key="risk" oninput="updateScore(this)" style="flex:1;accent-color:var(--amber)"><div class="score-val" id="sv-risk">5</div></div>
+    <div class="score-bar"><div class="score-label">Network strength</div><input type="range" min="1" max="10" value="5" class="score-range" data-key="network" oninput="updateScore(this)" style="flex:1;accent-color:var(--amber)"><div class="score-val" id="sv-network">5</div></div>
+  </div>
+  <div style="font-size:13px;color:var(--t2);margin:16px 0">Total readiness: <span id="total-score" style="color:var(--amber);font-family:var(--mono);font-size:16px;font-weight:800">25</span>/50 — <span id="score-interp" style="color:var(--t2)">loading...</span></div>
+
+  <!-- CONTEXT FIELDS -->
+  <div class="two-col mt16">
+    <div>
+      <div class="field"><label>Capital (liquid, actual)</label><input type="text" id="a-capital" placeholder="₹ amount — no inflation"></div>
+      <div class="field"><label>Runway (months before needing income)</label><input type="number" id="a-runway" placeholder="Months"></div>
+      <div class="field"><label>Real skills (what you can DO now)</label><textarea id="a-skills" placeholder="Not what you're learning. What you can deliver today."></textarea></div>
+      <div class="field"><label>True motivation (why, not what you tell people)</label><textarea id="a-motivation" placeholder="What would make you continue at month 8 when it's hard and unglamorous?"></textarea></div>
+    </div>
+    <div>
+      <div class="field"><label>Constraints (real limits)</label><textarea id="a-constraints" placeholder="Family pressure, location, health, debt, obligations..."></textarea></div>
+      <div class="field"><label>Stage</label><select id="a-stage"><option value="">Select...</option><option value="beginner">Beginner — no business run before</option><option value="intermediate">Intermediate — 1 business, some experience</option><option value="expert">Expert — multiple businesses, know the game</option></select></div>
+      <div class="field"><label>Current backup plan</label><textarea id="a-backup" placeholder="If everything fails in 6 months — what's the floor? Be specific."></textarea></div>
+      <div class="field"><label>Kill condition for current state</label><textarea id="a-killstate" placeholder="What single event would force you to completely pivot strategy? Capital below X? Health crisis? Market collapse?"></textarea></div>
+    </div>
+  </div>
+
+  <div class="alert alert-g" id="assess-saved" style="display:none">✓ Assessment saved. Next audit scheduled.</div>
+</div>
+
+<!-- PRIORITY & SYSTEMS -->
+<div class="view" id="v-priority">
+  <div class="ph rb"><div><div class="pt">Priority & systems</div><div class="ps">Step 1: Domain knowledge → Step 2: Full system → Step 3: Improvement</div></div>
+  <button class="btn btn-p btn-sm" onclick="openPriorityModal()">+ Prioritize business</button></div>
+  <div id="priority-list"></div>
+</div>
+
+<!-- CONSTITUTION -->
+<div class="view" id="v-constitution">
+  <div class="ph"><div class="pt">Long-term constitution</div><div class="ps">Life blueprint — what happens when, based on assessment + chicken-egg dependencies</div></div>
+  <button class="btn btn-p btn-sm" style="margin-bottom:20px" onclick="addConstitutionYear()">+ Add year</button>
+  <div id="constitution-list"></div>
+</div>
+
+<!-- ECOSYSTEM -->
+<div class="view" id="v-ecosystem">
+  <div class="ph rb"><div><div class="pt">Ecosystem map</div><div class="ps">Connect businesses. Validate synergies. Each connection is a hypothesis until proven.</div></div>
+  <button class="btn btn-p btn-sm" onclick="addConnection()">+ Add connection</button></div>
+  <div class="alert alert-w" style="margin-bottom:20px">⚡ Every ecosystem connection starts as HYPOTHESIS — not fact. Mark as TESTING when you attempt it. VALIDATED only when real data confirms it.</div>
+  <div id="ecosystem-list"></div>
+</div>
+
+<!-- SETTINGS -->
+<div class="view" id="v-settings">
+  <div class="ph"><div class="pt">Settings</div><div class="ps">Storage, API, MCP for V2</div></div>
+  <div class="card" style="border-color:var(--amber-dim)"><div class="ct" style="color:var(--amber)">V1 — Local IndexDB active</div><div class="cs">All data stored locally. Export anytime.</div></div>
+  <div style="padding:16px 0;border-bottom:1px solid var(--border)" class="rb">
+    <div><div style="font-weight:600;font-size:13px">Storage mode</div><div style="font-size:11px;color:var(--t2);margin-top:3px">Switch local ↔ remote</div></div>
+    <select id="storage-mode" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 12px;font-family:var(--sans)" onchange="updateStorage()">
+      <option value="local">Local (IndexDB) — V1</option><option value="remote">Remote (API) — V2</option>
+    </select>
+  </div>
+  <div id="api-config" style="display:none;padding-top:16px">
+    <div class="field"><label>Backend base URL</label><input type="text" id="api-url" placeholder="https://your-api.com/v1"></div>
+    <div class="field"><label>MCP server URL</label><input type="text" id="mcp-url" placeholder="https://your-mcp.com/mcp"></div>
+    <button class="btn btn-p btn-sm" onclick="saveAPIConfig()">Save config</button>
+  </div>
+  <div style="padding:16px 0;border-bottom:1px solid var(--border)" class="rb">
+    <div><div style="font-weight:600;font-size:13px">Export all data</div></div>
+    <button class="btn btn-g btn-sm" onclick="exportAll()">Export JSON</button>
+  </div>
+  <div style="padding:16px 0" class="rb">
+    <div><div style="font-weight:600;font-size:13px">Clear all data</div></div>
+    <button class="btn btn-d btn-sm" onclick="clearAll()">Clear</button>
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- BUSINESS MODAL -->
+<div class="modal-overlay" id="biz-modal">
+<div class="modal">
+  <div class="rb" style="margin-bottom:16px"><div style="font-size:16px;font-weight:800" id="biz-modal-title">Add Business</div><button class="btn btn-g btn-sm" onclick="closeModal('biz-modal')">✕</button></div>
+  <input type="hidden" id="biz-type">
+  <input type="hidden" id="biz-edit-id">
+  <div class="field"><label>Business name</label><input type="text" id="biz-name" placeholder="Short, descriptive name"></div>
+  <div class="field"><label>Description — what it does</label><textarea id="biz-desc" placeholder="One paragraph. What problem, for whom, how."></textarea></div>
+  <div class="field"><label>Target market</label><input type="text" id="biz-market" placeholder="Specific customer avatar + size"></div>
+  <div class="field"><label>Revenue model</label><input type="text" id="biz-revenue" placeholder="How money flows in"></div>
+  <div class="field"><label>Capital required</label><input type="text" id="biz-capital" placeholder="Realistic amount to get to proof of concept"></div>
+  <div class="field"><label>Time to first revenue</label><input type="text" id="biz-timeline" placeholder="Months"></div>
+  <div id="s2-fields" style="display:none">
+    <div class="field"><label>Psychology trigger — what human need drives this?</label><textarea id="biz-psych" placeholder="What latent need, what emotion, what behavior are you targeting?"></textarea></div>
+    <div class="field"><label>Market creation strategy</label><textarea id="biz-mcs" placeholder="How do you create demand that doesn't exist yet?"></textarea></div>
+  </div>
+  <div class="kill-box">
+    <div class="kill-label">⚠ KILL CONDITION — when to shut this down</div>
+    <textarea id="biz-kill" placeholder="Specific: 'If after 6 months revenue < X and no clear path to Y, this business is dead.' No vague conditions."></textarea>
+  </div>
+  <div class="field mt16"><label>Your unique advantage</label><textarea id="biz-edge" placeholder="Why would YOU win this vs someone else starting today?"></textarea></div>
+  <div class="row mt16"><button class="btn btn-p" onclick="saveBusiness()">Save business</button></div>
+</div>
+</div>
+
+<!-- PRIORITY MODAL -->
+<div class="modal-overlay" id="priority-modal">
+<div class="modal">
+  <div class="rb" style="margin-bottom:16px"><div style="font-size:16px;font-weight:800">Prioritize & build system</div><button class="btn btn-g btn-sm" onclick="closeModal('priority-modal')">✕</button></div>
+  <div class="field"><label>Select business</label>
+    <select id="pr-biz-select" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px 14px;font-family:var(--sans);font-size:13px"></select>
+  </div>
+  <div class="field"><label>Priority rank</label><select id="pr-rank"><option value="1">#1 — Start immediately</option><option value="2">#2 — After #1 is stable</option><option value="3">#3 — Future build</option><option value="4">#4+ — Long term</option></select></div>
+  <div class="field"><label>Assessment match</label><select id="pr-match"><option value="green">✅ Green — perfect fit now</option><option value="yellow">⚠️ Yellow — needs adjustment</option><option value="red">❌ Red — not now, future</option></select></div>
+  <div class="row mt16"><button class="btn btn-p" onclick="savePriority()">Add to priority list</button></div>
+</div>
+</div>
+
+<!-- SYSTEM BUILDER MODAL -->
+<div class="modal-overlay" id="system-modal">
+<div class="modal" style="width:700px">
+  <div class="rb" style="margin-bottom:4px"><div style="font-size:16px;font-weight:800" id="sys-modal-title">Build system</div><button class="btn btn-g btn-sm" onclick="closeModal('system-modal')">✕</button></div>
+  <div style="font-size:12px;color:var(--t2);margin-bottom:20px" id="sys-biz-name"></div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab(this,'sys-step1')">Step 1 — Domain knowledge</div>
+    <div class="tab" onclick="switchTab(this,'sys-step2')">Step 2 — System & SOPs</div>
+    <div class="tab" onclick="switchTab(this,'sys-step3')">Step 3 — Improvement</div>
+  </div>
+
+  <div class="tab-content active" id="sys-step1">
+    <div class="alert alert-w mt8" style="margin-bottom:16px">⚡ Teach-back test required. You don't know this domain until you can explain it under pressure without notes.</div>
+    <div class="field"><label>Core knowledge areas — list what this domain requires</label><textarea id="s1-knowledge" style="min-height:100px" placeholder="List the 10-15 core knowledge areas. Not what you'll study — what you need to know to operate."></textarea></div>
+    <div class="field"><label>Learning resources — mapped to knowledge gaps</label><textarea id="s1-resources" placeholder="For each resource: WHAT it is → WHY it matters → WHICH knowledge area it fills"></textarea></div>
+    <div class="field"><label>Time to master — realistic estimate</label><input type="text" id="s1-timeline" placeholder="Months of intensive study"></div>
+    <div style="border:1px solid var(--amber-dim);padding:16px;margin-bottom:16px">
+      <div class="rb" style="margin-bottom:10px">
+        <div><div style="font-size:13px;font-weight:600">Teach-back test</div><div style="font-size:11px;color:var(--t2)">Explain this domain to a skeptic in 3 minutes — no notes</div></div>
+        <button class="btn btn-g btn-sm" id="s1-timer-btn" onclick="startDomainTimer()">Start 3min</button>
+      </div>
+      <div style="font-family:var(--mono);font-size:32px;color:var(--amber);text-align:center;padding:12px" id="s1-timer">3:00</div>
+      <div class="field mt8"><label>What stumped you? These are real gaps.</label><textarea id="s1-gaps" placeholder="What you couldn't explain = what you don't actually know yet"></textarea></div>
+    </div>
+    <div class="field"><label>Domain mastery verdict</label><select id="s1-verdict"><option value="">Select...</option><option value="ready">Ready — can move to Step 2</option><option value="partial">Partial — 2-4 weeks more needed</option><option value="notready">Not ready — major gaps remain</option></select></div>
+    <button class="btn btn-p btn-sm mt8" onclick="saveStep1()">Save Step 1</button>
+  </div>
+
+  <div class="tab-content" id="sys-step2">
+    <div class="alert alert-w mt8" style="margin-bottom:16px">⚡ Params 1-3 are survival parameters. Locked sequence. Complete in order before accessing 4-11.</div>
+
+    <!-- SURVIVAL PARAMS - LOCKED SEQUENCE -->
+    <div id="param-1">
+      <div class="param-header" onclick="toggleParam(1)"><span class="param-num">01</span><span class="param-name">Market validation system</span><span class="survival-flag">SURVIVAL</span><span class="param-status badge badge-a" id="ps-1">incomplete</span></div>
+      <div class="param-body" id="pb-1">
+        <div class="field"><label>Validation method — pilot program design</label><textarea id="p1-method" placeholder="Pre-launch pilot: How many customers, at what price, for how long?"></textarea></div>
+        <div class="field"><label>Success metric — minimum to proceed</label><input type="text" id="p1-metric" placeholder="e.g. 8/10 pilot customers renew at full price"></div>
+        <div class="field"><label>Kill criteria — when to pivot or cancel</label><input type="text" id="p1-kill" placeholder="e.g. If less than 5/10 renew → pivot. If cost > ₹X → cancel"></div>
+        <div class="field"><label>Timeline — pilot duration</label><input type="text" id="p1-timeline" placeholder="Weeks/months"></div>
+        <button class="btn btn-s btn-sm" onclick="completeParam(1)">Mark complete → unlock param 2</button>
+      </div>
+    </div>
+
+    <div id="param-2" class="param-locked">
+      <div class="param-header" onclick="toggleParam(2)"><span class="param-num">02</span><span class="param-name">Unit economics</span><span class="survival-flag">SURVIVAL</span><span class="param-status badge badge-a" id="ps-2">locked</span></div>
+      <div class="param-body" id="pb-2">
+        <div class="two-col">
+          <div>
+            <div class="field"><label>Price per customer</label><input type="text" id="p2-price" placeholder="₹ per month/transaction"></div>
+            <div class="field"><label>Customer lifetime (months)</label><input type="number" id="p2-lifetime" placeholder="Average months"></div>
+            <div class="field"><label>LTV calculation</label><input type="text" id="p2-ltv" placeholder="Price × Lifetime"></div>
+          </div>
+          <div>
+            <div class="field"><label>Cost of acquisition (CAC)</label><input type="text" id="p2-cac" placeholder="Total marketing spend ÷ new customers"></div>
+            <div class="field"><label>Monthly servicing cost per customer</label><input type="text" id="p2-service" placeholder="Labor + tools + support"></div>
+            <div class="field"><label>Gross margin %</label><input type="text" id="p2-margin" placeholder="(Revenue - COGS) / Revenue"></div>
+          </div>
+        </div>
+        <div class="field"><label>Payback period — when customer becomes profitable</label><input type="text" id="p2-payback" placeholder="CAC ÷ monthly contribution margin"></div>
+        <button class="btn btn-s btn-sm" onclick="completeParam(2)">Mark complete → unlock param 3</button>
+      </div>
+    </div>
+
+    <div id="param-3" class="param-locked">
+      <div class="param-header" onclick="toggleParam(3)"><span class="param-num">03</span><span class="param-name">Go-to-market strategy</span><span class="survival-flag">SURVIVAL</span><span class="param-status badge badge-a" id="ps-3">locked</span></div>
+      <div class="param-body" id="pb-3">
+        <div class="field"><label>Core value proposition — one sentence</label><input type="text" id="p3-prop" placeholder="For [target], we provide [value] unlike [competitor] because [differentiation]"></div>
+        <div class="field"><label>Primary acquisition channel + cost per lead</label><textarea id="p3-channel" placeholder="Where do customers exist? How do you reach them? What does one lead cost?"></textarea></div>
+        <div class="field"><label>Launch plan — month by month</label><textarea id="p3-launch" placeholder="Month 1: X. Month 2-3: Y. Month 4-6: Z"></textarea></div>
+        <button class="btn btn-s btn-sm" onclick="completeParam(3)">Mark complete → unlock params 4-11</button>
+      </div>
+    </div>
+
+    <!-- FREE PARAMS 4-11 -->
+    <div id="params-4-11" class="param-locked">
+      <div id="param-4"><div class="param-header" onclick="toggleParam(4)"><span class="param-num">04</span><span class="param-name">Operations SOPs</span><span class="param-status badge badge-p" id="ps-4">optional</span></div>
+      <div class="param-body" id="pb-4"><div class="field"><label>Onboarding process — step by step</label><textarea id="p4-onboard" placeholder="What happens from day 1 to active customer?"></textarea></div><div class="field"><label>Service delivery workflow</label><textarea id="p4-workflow" placeholder="Core steps, quality checkpoints, turnaround times, tools"></textarea></div><div class="field"><label>Quality control process</label><textarea id="p4-quality" placeholder="Review levels, error handling, escalation path"></textarea></div><button class="btn btn-s btn-sm" onclick="saveParam(4)">Save</button></div></div>
+
+      <div id="param-5"><div class="param-header" onclick="toggleParam(5)"><span class="param-num">05</span><span class="param-name">Team building timeline</span><span class="param-status badge badge-p" id="ps-5">optional</span></div>
+      <div class="param-body" id="pb-5"><div class="field"><label>Phase 1 — solo (when, what you handle alone)</label><textarea id="p5-solo" placeholder="Month 0-X: What must be proven before first hire?"></textarea></div><div class="field"><label>First critical hire — role, when, why this role first</label><textarea id="p5-hire1" placeholder="Role, month, salary, success metric"></textarea></div><div class="field"><label>Chicken-egg problem + solution</label><textarea id="p5-chickegg" placeholder="Can't hire without revenue, can't get revenue without team. How solved?"></textarea></div><button class="btn btn-s btn-sm" onclick="saveParam(5)">Save</button></div></div>
+
+      <div id="param-6"><div class="param-header" onclick="toggleParam(6)"><span class="param-num">06</span><span class="param-name">Capital stack plan</span><span class="param-status badge badge-p" id="ps-6">optional</span></div>
+      <div class="param-body" id="pb-6"><div class="field"><label>Bootstrap phase — initial capital, burn rate, breakeven</label><textarea id="p6-bootstrap" placeholder="₹ needed, monthly burn, month when cashflow positive"></textarea></div><div class="field"><label>External capital decision — when to raise vs stay bootstrapped</label><textarea id="p6-external" placeholder="Trigger conditions for debt / equity / stay bootstrapped"></textarea></div><div class="field"><label>Profit allocation to next business</label><input type="text" id="p6-next" placeholder="% reinvest + how much needed for next venture + when available"></div><button class="btn btn-s btn-sm" onclick="saveParam(6)">Save</button></div></div>
+
+      <div id="param-7"><div class="param-header" onclick="toggleParam(7)"><span class="param-num">07</span><span class="param-name">Metrics & KPIs</span><span class="param-status badge badge-p" id="ps-7">optional</span></div>
+      <div class="param-body" id="pb-7"><div class="field"><label>North star metric — the ONE number that matters most</label><input type="text" id="p7-north" placeholder="What single metric predicts long-term success?"></div><div class="field"><label>Daily, weekly, monthly dashboard</label><textarea id="p7-dashboard" placeholder="Daily: what to check. Weekly: what to review. Monthly: strategic decisions."></textarea></div><button class="btn btn-s btn-sm" onclick="saveParam(7)">Save</button></div></div>
+
+      <div id="param-8"><div class="param-header" onclick="toggleParam(8)"><span class="param-num">08</span><span class="param-name">Risk mitigation</span><span class="param-status badge badge-p" id="ps-8">optional</span></div>
+      <div class="param-body" id="pb-8"><div class="field"><label>Top 5 risks + backup plan for each</label><textarea id="p8-risks" style="min-height:120px" placeholder="Risk 1: [what] → Mitigation: [how]&#10;Risk 2: [what] → Mitigation: [how]&#10;..."></textarea></div><div class="field"><label>Kill condition for this business</label><textarea id="p8-kill" placeholder="Specific conditions under which this business gets shut down. Not vague — exact numbers and timeframes."></textarea></div><button class="btn btn-s btn-sm" onclick="saveParam(8)">Save</button></div></div>
+
+      <div id="param-9"><div class="param-header" onclick="toggleParam(9)"><span class="param-num">09</span><span class="param-name">Sales & marketing system</span><span class="param-status badge badge-p" id="ps-9">optional</span></div>
+      <div class="param-body" id="pb-9"><div class="field"><label>Lead generation machine — target + sources + cost</label><textarea id="p9-leads" placeholder="X leads/month from Y channels at Z cost per lead"></textarea></div><div class="field"><label>Conversion funnel + rate at each stage</label><textarea id="p9-funnel" placeholder="Lead → Qualified → Demo → Proposal → Close. % at each step."></textarea></div><div class="field"><label>Referral + retention system</label><textarea id="p9-referral" placeholder="How 30%+ of new customers come from existing ones"></textarea></div><button class="btn btn-s btn-sm" onclick="saveParam(9)">Save</button></div></div>
+
+      <div id="param-10"><div class="param-header" onclick="toggleParam(10)"><span class="param-num">10</span><span class="param-name">Exit / transition strategy</span><span class="param-status badge badge-p" id="ps-10">optional</span></div>
+      <div class="param-body" id="pb-10"><div class="field"><label>Transition timeline — when you step back from operations</label><textarea id="p10-transition" placeholder="Year 1: all hands. Year 2: hire GM. Year 3: oversight only."></textarea></div><div class="field"><label>Sale readiness + potential buyers + valuation</label><textarea id="p10-sale" placeholder="Who would acquire this? At what multiple? What needs to be clean?"></textarea></div><button class="btn btn-s btn-sm" onclick="saveParam(10)">Save</button></div></div>
+
+      <div id="param-11"><div class="param-header" onclick="toggleParam(11)"><span class="param-num">11</span><span class="param-name">Strategic roadmap</span><span class="param-status badge badge-p" id="ps-11">optional</span></div>
+      <div class="param-body" id="pb-11"><div class="field"><label>Q1-Q4 plan — goal, initiatives, metrics per quarter</label><textarea id="p11-quarters" style="min-height:120px" placeholder="Q1: [goal] → [initiatives] → [metrics]&#10;Q2: ..."></textarea></div><div class="field"><label>Year 2+ vision — where this business should be</label><textarea id="p11-vision" placeholder="Revenue, team size, market position, transition to next business"></textarea></div><button class="btn btn-s btn-sm" onclick="saveParam(11)">Save</button></div></div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="sys-step3">
+    <div class="sl-desc mt8">Store current system state, identify what to improve, design v2.0, replace when trigger met.</div>
+    <div class="field"><label>Current system version</label><input type="text" id="s3-version" placeholder="v1.0 — launched Month X"></div>
+    <div class="field"><label>What's working — and WHY structurally</label><textarea id="s3-working" placeholder="Not just 'clients are happy'. WHY is this working at a system level?"></textarea></div>
+    <div class="field"><label>What's not working — bottleneck</label><textarea id="s3-bottleneck" placeholder="Where does the system break down? What can't scale?"></textarea></div>
+    <div class="field"><label>v2.0 system design — what changes and why</label><textarea id="s3-v2" placeholder="Specific improvements. What gets automated, replaced, added?"></textarea></div>
+    <div class="field"><label>Replacement trigger — when to switch to v2</label><input type="text" id="s3-trigger" placeholder="e.g. When we hit 80 clients (80% capacity) → deploy v2"></div>
+    <button class="btn btn-p btn-sm mt8" onclick="saveStep3()">Save Step 3</button>
+  </div>
+</div>
+</div>
+
+<script>
+// ── DB ──────────────────────────────────────────────────────────────────────
+let db;
+const DB='BFS_V1';
+function initDB(){
+  return new Promise((res,rej)=>{
+    const r=indexedDB.open(DB,1);
+    r.onupgradeneeded=e=>{
+      const d=e.target.result;
+      ['businesses','priorities','assessment','constitution','ecosystem','settings'].forEach(s=>{
+        if(!d.objectStoreNames.contains(s)) d.createObjectStore(s,{keyPath:'id'});
+      });
+    };
+    r.onsuccess=e=>{db=e.target.result;res()};
+    r.onerror=()=>rej(r.error);
+  });
+}
+const dbPut=(s,o)=>new Promise((res,rej)=>{const t=db.transaction(s,'readwrite');const r=t.objectStore(s).put(o);r.onsuccess=()=>res();r.onerror=()=>rej()});
+const dbGet=(s,k)=>new Promise((res,rej)=>{const t=db.transaction(s,'readonly');const r=t.objectStore(s).get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej()});
+const dbAll=(s)=>new Promise((res,rej)=>{const t=db.transaction(s,'readonly');const r=t.objectStore(s).getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej()});
+const dbDel=(s,k)=>new Promise((res,rej)=>{const t=db.transaction(s,'readwrite');const r=t.objectStore(s).delete(k);r.onsuccess=()=>res();r.onerror=()=>rej()});
+
+// ── STATE ───────────────────────────────────────────────────────────────────
+let currentBizId=null, currentPriorityId=null;
+let domainTimer=null, domainSecs=180;
+let paramState={};
+
+// ── NAV ─────────────────────────────────────────────────────────────────────
+function nav(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  document.getElementById('v-'+v).classList.add('active');
+  const map={dashboard:0,explore:1,assessment:2,priority:3,constitution:4,ecosystem:5,settings:6};
+  if(map[v]!==undefined) document.querySelectorAll('.nav-item')[map[v]].classList.add('active');
+  if(v==='dashboard') renderDashboard();
+  if(v==='explore') renderExplore();
+  if(v==='priority') renderPriority();
+  if(v==='constitution') renderConstitution();
+  if(v==='ecosystem') renderEcosystem();
+  if(v==='assessment') loadAssessment();
+}
+
+function switchTab(el,id){
+  const parent=el.closest('.view')||el.closest('.modal');
+  parent.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  parent.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+
+// ── DASHBOARD ────────────────────────────────────────────────────────────────
+async function renderDashboard(){
+  const [biz,prios,assess]=await Promise.all([dbAll('businesses'),dbAll('priorities'),dbGet('assessment','current')]);
+  document.getElementById('st-biz').textContent=biz.length;
+  document.getElementById('st-active').textContent=prios.filter(p=>p.rank<=2).length;
+  if(assess){
+    const score=assess.scores?Object.values(assess.scores).reduce((a,b)=>a+b,0):0;
+    document.getElementById('st-score').textContent=score+'/50';
+    document.getElementById('st-audit').textContent=timeAgo(assess.timestamp);
+    checkAuditDue(assess);
+  }
+  const box=document.getElementById('dash-biz-list');
+  const active=prios.filter(p=>p.rank<=2).sort((a,b)=>a.rank-b.rank);
+  if(!active.length){box.innerHTML='<div class="empty"><div class="empty-i">⬡</div>No active builds. Prioritize a business first.</div>';return;}
+  box.innerHTML=await Promise.all(active.map(async p=>{
+    const b=biz.find(x=>x.id===p.bizId)||{};
+    return `<div class="biz-card"><div><div class="biz-name">${b.name||'—'}</div><div class="biz-meta">#${p.rank} · ${p.type==='s1'?'Strategy 1':'Strategy 2'} · ${matchBadge(p.match)}</div></div><div class="badge ${p.match==='green'?'badge-g':p.match==='yellow'?'badge-a':'badge-r'}">${p.match}</div></div>`;
+  })).then(r=>r.join(''));
+}
+
+function matchBadge(m){return m==='green'?'✅ perfect fit':m==='yellow'?'⚠️ needs adjustment':'❌ not now'}
+
+function checkAuditDue(assess){
+  const alert=document.getElementById('audit-due-alert');
+  if(!assess||!assess.triggers) return;
+  const days=assess.triggers.customDays||30;
+  const due=assess.timestamp+(days*86400000);
+  if(Date.now()>due){alert.style.display='block';}
+}
+
+// ── EXPLORE ──────────────────────────────────────────────────────────────────
+async function renderExplore(){
+  const biz=await dbAll('businesses');
+  ['s1','s2'].forEach(t=>{
+    const list=document.getElementById('list-'+t);
+    const items=biz.filter(b=>b.type===t);
+    if(!items.length){list.innerHTML='<div class="empty"><div class="empty-i">⊕</div>No '+t+' businesses yet.</div>';return;}
+    list.innerHTML=items.map(b=>`
+      <div class="biz-card">
+        <div><div class="biz-name">${b.name}</div>
+        <div class="biz-meta">${b.market||'—'} · ${b.capital||'—'} · ${b.timeline||'—'}</div>
+        <div style="font-size:12px;color:var(--t2);margin-top:6px">${(b.desc||'').slice(0,100)}${(b.desc||'').length>100?'...':''}</div></div>
+        <div class="row"><button class="btn btn-g btn-sm" onclick="editBiz('${b.id}')">Edit</button><button class="btn btn-d btn-sm" onclick="deleteBiz('${b.id}')">✕</button></div>
+      </div>`).join('');
+  });
+}
+
+function openBizModal(type){
+  document.getElementById('biz-type').value=type;
+  document.getElementById('biz-edit-id').value='';
+  document.getElementById('biz-modal-title').textContent='Add '+( type==='s1'?'Strategy 1':'Strategy 2')+' business';
+  document.getElementById('s2-fields').style.display=type==='s2'?'block':'none';
+  ['biz-name','biz-desc','biz-market','biz-revenue','biz-capital','biz-timeline','biz-kill','biz-edge','biz-psych','biz-mcs'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('biz-modal').classList.add('open');
+}
+
+async function editBiz(id){
+  const b=await dbGet('businesses',id);
+  if(!b) return;
+  document.getElementById('biz-type').value=b.type;
+  document.getElementById('biz-edit-id').value=id;
+  document.getElementById('biz-modal-title').textContent='Edit business';
+  document.getElementById('s2-fields').style.display=b.type==='s2'?'block':'none';
+  document.getElementById('biz-name').value=b.name||'';
+  document.getElementById('biz-desc').value=b.desc||'';
+  document.getElementById('biz-market').value=b.market||'';
+  document.getElementById('biz-revenue').value=b.revenue||'';
+  document.getElementById('biz-capital').value=b.capital||'';
+  document.getElementById('biz-timeline').value=b.timeline||'';
+  document.getElementById('biz-kill').value=b.kill||'';
+  document.getElementById('biz-edge').value=b.edge||'';
+  if(b.type==='s2'){document.getElementById('biz-psych').value=b.psych||'';document.getElementById('biz-mcs').value=b.mcs||'';}
+  document.getElementById('biz-modal').classList.add('open');
+}
+
+async function saveBusiness(){
+  const name=document.getElementById('biz-name').value.trim();
+  const kill=document.getElementById('biz-kill').value.trim();
+  if(!name||!kill){alert('Business name and kill condition are both required.');return;}
+  const type=document.getElementById('biz-type').value;
+  const editId=document.getElementById('biz-edit-id').value;
+  const b={
+    id:editId||Date.now().toString(), type,
+    name, desc:document.getElementById('biz-desc').value,
+    market:document.getElementById('biz-market').value,
+    revenue:document.getElementById('biz-revenue').value,
+    capital:document.getElementById('biz-capital').value,
+    timeline:document.getElementById('biz-timeline').value,
+    kill, edge:document.getElementById('biz-edge').value,
+    timestamp:Date.now()
+  };
+  if(type==='s2'){b.psych=document.getElementById('biz-psych').value;b.mcs=document.getElementById('biz-mcs').value;}
+  await dbPut('businesses',b);
+  closeModal('biz-modal');
+  renderExplore();
+}
+
+async function deleteBiz(id){
+  if(!confirm('Delete this business?')) return;
+  await dbDel('businesses',id);
+  renderExplore();
+}
+
+// ── SELF-ASSESSMENT ──────────────────────────────────────────────────────────
+function updateScore(input){
+  const key=input.dataset.key;
+  document.getElementById('sv-'+key).textContent=input.value;
+  recalcTotal();
+}
+
+function recalcTotal(){
+  const ranges=document.querySelectorAll('.score-range');
+  const total=Array.from(ranges).reduce((s,r)=>s+parseInt(r.value),0);
+  document.getElementById('total-score').textContent=total;
+  const interp=total<20?'⚠ Not ready — high-risk moves will fail':total<30?'Strategy 1 only — proven demand, low risk':total<40?'Strategy 1 solid + cautious S2 possible':'High readiness — both strategies open';
+  document.getElementById('score-interp').textContent=interp;
+}
+
+function toggleTrigger(el,id){
+  const cb=document.getElementById(id);
+  cb.checked=!cb.checked;
+  el.classList.toggle('active',cb.checked);
+}
+
+async function loadAssessment(){
+  const a=await dbGet('assessment','current');
+  if(!a) return;
+  if(a.scores){Object.entries(a.scores).forEach(([k,v])=>{const r=document.querySelector(`.score-range[data-key="${k}"]`);if(r){r.value=v;document.getElementById('sv-'+k).textContent=v;}});}
+  if(a.fields){Object.entries(a.fields).forEach(([k,v])=>{const el=document.getElementById('a-'+k);if(el)el.value=v;});}
+  if(a.triggers){Object.entries(a.triggers).forEach(([k,v])=>{const el=document.getElementById('tr-'+k);if(el&&typeof v==='boolean'){el.checked=v;el.closest('.audit-trigger')?.classList.toggle('active',v);}});}
+  recalcTotal();
+}
+
+async function saveAssessment(){
+  const scores={};
+  document.querySelectorAll('.score-range').forEach(r=>{scores[r.dataset.key]=parseInt(r.value);});
+  const fields={capital:document.getElementById('a-capital').value,runway:document.getElementById('a-runway').value,skills:document.getElementById('a-skills').value,motivation:document.getElementById('a-motivation').value,constraints:document.getElementById('a-constraints').value,stage:document.getElementById('a-stage').value,backup:document.getElementById('a-backup').value,killstate:document.getElementById('a-killstate').value};
+  const triggers={monthly:document.getElementById('tr-monthly').checked,quarterly:document.getElementById('tr-quarterly').checked,capital:document.getElementById('tr-capital').checked,newbiz:document.getElementById('tr-newbiz').checked,failure:document.getElementById('tr-failure').checked,custom:document.getElementById('tr-custom').checked,customDays:parseInt(document.getElementById('tr-custom-days').value)||30};
+  await dbPut('assessment',{id:'current',scores,fields,triggers,timestamp:Date.now()});
+  document.getElementById('assess-saved').style.display='block';
+  setTimeout(()=>document.getElementById('assess-saved').style.display='none',3000);
+}
+
+// ── PRIORITY ─────────────────────────────────────────────────────────────────
+async function openPriorityModal(){
+  const biz=await dbAll('businesses');
+  const sel=document.getElementById('pr-biz-select');
+  sel.innerHTML=biz.map(b=>`<option value="${b.id}" data-type="${b.type}">${b.name} (${b.type==='s1'?'S1':'S2'})</option>`).join('');
+  document.getElementById('priority-modal').classList.add('open');
+}
+
+async function savePriority(){
+  const sel=document.getElementById('pr-biz-select');
+  const bizId=sel.value;
+  const type=sel.options[sel.selectedIndex]?.dataset.type||'s1';
+  const rank=parseInt(document.getElementById('pr-rank').value);
+  const match=document.getElementById('pr-match').value;
+  await dbPut('priorities',{id:bizId,bizId,type,rank,match,timestamp:Date.now(),params:{},step1:{},step3:{}});
+  closeModal('priority-modal');
+  renderPriority();
+}
+
+async function renderPriority(){
+  const [prios,biz]=await Promise.all([dbAll('priorities'),dbAll('businesses')]);
+  const box=document.getElementById('priority-list');
+  if(!prios.length){box.innerHTML='<div class="empty"><div class="empty-i">≡</div>No businesses prioritized yet.</div>';return;}
+  box.innerHTML=prios.sort((a,b)=>a.rank-b.rank).map(p=>{
+    const b=biz.find(x=>x.id===p.bizId)||{};
+    const s1done=p.step1?.verdict==='ready';
+    const survDone=p.params?.p1&&p.params?.p2&&p.params?.p3;
+    return `<div class="card">
+      <div class="rb" style="margin-bottom:12px">
+        <div><div class="biz-name">#${p.rank} — ${b.name||'—'}</div><div class="biz-meta">${p.type==='s1'?'Strategy 1':'Strategy 2'} · <span class="${p.match==='green'?'badge-g':p.match==='yellow'?'badge-a':'badge-r'}" style="font-size:11px;font-family:var(--mono)">${p.match}</span></div></div>
+        <button class="btn btn-p btn-sm" onclick="openSystemModal('${p.id}')">Build system →</button>
+      </div>
+      <div class="row" style="gap:8px;flex-wrap:wrap">
+        <span class="badge ${s1done?'badge-g':'badge-a'}">Step 1: ${s1done?'✓ ready':'pending'}</span>
+        <span class="badge ${survDone?'badge-g':'badge-r'}">Survival params: ${survDone?'✓ complete':'locked'}</span>
+        <span class="badge badge-p">Step 3: ${p.step3?.version||'not started'}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function openSystemModal(prioId){
+  currentPriorityId=prioId;
+  const p=await dbGet('priorities',prioId);
+  const biz=await dbGet('businesses',p.bizId);
+  document.getElementById('sys-modal-title').textContent=biz?.name||'Build system';
+  document.getElementById('sys-biz-name').textContent=biz?.desc?.slice(0,120)||'';
+  paramState=p.params||{};
+  // Restore survival param states
+  [1,2,3].forEach(n=>{
+    if(paramState['p'+n]){
+      document.getElementById('ps-'+n).textContent='✓ complete';
+      document.getElementById('ps-'+n).className='badge badge-g';
+    }
+  });
+  // Unlock logic
+  applyParamLocks();
+  // Restore step1
+  if(p.step1){['knowledge','resources','timeline','gaps','verdict'].forEach(k=>{const el=document.getElementById('s1-'+k);if(el&&p.step1[k])el.value=p.step1[k];});}
+  // Restore step3
+  if(p.step3){['version','working','bottleneck','v2','trigger'].forEach(k=>{const el=document.getElementById('s3-'+k);if(el&&p.step3[k])el.value=p.step3[k];});}
+  document.getElementById('system-modal').classList.add('open');
+}
+
+function applyParamLocks(){
+  const p1=paramState.p1,p2=paramState.p2,p3=paramState.p3;
+  document.getElementById('param-2').classList.toggle('param-locked',!p1);
+  document.getElementById('param-3').classList.toggle('param-locked',!p1||!p2);
+  document.getElementById('params-4-11').classList.toggle('param-locked',!p1||!p2||!p3);
+}
+
+function toggleParam(n){
+  const body=document.getElementById('pb-'+n);
+  const header=body.previousElementSibling;
+  const isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);
+  header.classList.toggle('open',!isOpen);
+}
+
+async function completeParam(n){
+  paramState['p'+n]=true;
+  document.getElementById('ps-'+n).textContent='✓ complete';
+  document.getElementById('ps-'+n).className='badge badge-g';
+  applyParamLocks();
+  const p=await dbGet('priorities',currentPriorityId);
+  p.params=paramState;
+  await dbPut('priorities',p);
+}
+
+async function saveParam(n){
+  const p=await dbGet('priorities',currentPriorityId);
+  if(!p.paramData) p.paramData={};
+  // Collect all inputs in that param body
+  const body=document.getElementById('pb-'+n);
+  body.querySelectorAll('input,textarea').forEach(el=>{if(el.id)p.paramData[el.id]=el.value;});
+  await dbPut('priorities',p);
+  document.getElementById('ps-'+n).textContent='saved';
+  document.getElementById('ps-'+n).className='badge badge-g';
+}
+
+async function saveStep1(){
+  const p=await dbGet('priorities',currentPriorityId);
+  p.step1={knowledge:document.getElementById('s1-knowledge').value,resources:document.getElementById('s1-resources').value,timeline:document.getElementById('s1-timeline').value,gaps:document.getElementById('s1-gaps').value,verdict:document.getElementById('s1-verdict').value};
+  await dbPut('priorities',p);
+  alert('Step 1 saved.');
+}
+
+async function saveStep3(){
+  const p=await dbGet('priorities',currentPriorityId);
+  p.step3={version:document.getElementById('s3-version').value,working:document.getElementById('s3-working').value,bottleneck:document.getElementById('s3-bottleneck').value,v2:document.getElementById('s3-v2').value,trigger:document.getElementById('s3-trigger').value};
+  await dbPut('priorities',p);
+  alert('Step 3 saved.');
+}
+
+// Domain timer
+function startDomainTimer(){
+  if(domainTimer){clearInterval(domainTimer);domainTimer=null;domainSecs=180;document.getElementById('s1-timer').textContent='3:00';document.getElementById('s1-timer-btn').textContent='Start 3min';return;}
+  document.getElementById('s1-timer-btn').textContent='Stop';
+  domainTimer=setInterval(()=>{
+    domainSecs--;
+    const m=Math.floor(domainSecs/60),s=domainSecs%60;
+    document.getElementById('s1-timer').textContent=m+':'+(s<10?'0':'')+s;
+    if(domainSecs<=0){clearInterval(domainTimer);domainTimer=null;document.getElementById('s1-timer').textContent='0:00';document.getElementById('s1-timer-btn').textContent='Restart';}
+  },1000);
+}
+
+// ── CONSTITUTION ─────────────────────────────────────────────────────────────
+async function addConstitutionYear(){
+  const id=Date.now().toString();
+  await dbPut('constitution',{id,year:'Year '+((await dbAll('constitution')).length+1),bizExecute:'',whyNow:'',target:'',enables:'',chickenEgg:'',timestamp:Date.now()});
+  renderConstitution();
+}
+
+async function renderConstitution(){
+  const years=await dbAll('constitution');
+  const box=document.getElementById('constitution-list');
+  if(!years.length){box.innerHTML='<div class="empty"><div class="empty-i">◉</div>Add years to your life blueprint.</div>';return;}
+  box.innerHTML=years.sort((a,b)=>a.timestamp-b.timestamp).map(y=>`
+    <div class="card">
+      <div class="rb" style="margin-bottom:16px"><input type="text" value="${y.year}" style="background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--text);font-size:16px;font-weight:800;font-family:var(--sans);width:200px;padding:4px 0" onchange="updateConstitution('${y.id}','year',this.value)"><button class="btn btn-d btn-sm" onclick="deleteConstitution('${y.id}')">✕</button></div>
+      <div class="two-col">
+        <div>
+          <div class="field"><label>Execute — which businesses</label><textarea style="min-height:60px" onchange="updateConstitution('${y.id}','bizExecute',this.value)">${y.bizExecute||''}</textarea></div>
+          <div class="field"><label>Why now — assessment + dependency met</label><textarea style="min-height:60px" onchange="updateConstitution('${y.id}','whyNow',this.value)">${y.whyNow||''}</textarea></div>
+        </div>
+        <div>
+          <div class="field"><label>Target outcome</label><textarea style="min-height:60px" onchange="updateConstitution('${y.id}','target',this.value)">${y.target||''}</textarea></div>
+          <div class="field"><label>Chicken-egg dependency solved</label><textarea style="min-height:60px" onchange="updateConstitution('${y.id}','chickenEgg',this.value)">${y.chickenEgg||''}</textarea></div>
+        </div>
+      </div>
+      <div class="field"><label>Enables — what this year unlocks for next year</label><input type="text" value="${y.enables||''}" onchange="updateConstitution('${y.id}','enables',this.value)" placeholder="Capital accumulated, experience gained, network built..."></div>
+    </div>`).join('');
+}
+
+async function updateConstitution(id,key,val){
+  const y=await dbGet('constitution',id);
+  y[key]=val;
+  await dbPut('constitution',y);
+}
+
+async function deleteConstitution(id){await dbDel('constitution',id);renderConstitution();}
+
+// ── ECOSYSTEM ─────────────────────────────────────────────────────────────────
+async function addConnection(){
+  const biz=await dbAll('businesses');
+  const name=prompt('Connection name (e.g. Accounting → SaaS):');
+  if(!name) return;
+  await dbPut('ecosystem',{id:Date.now().toString(),name,fromBiz:'',toBiz:'',hypothesis:'',synergy:'',validation:'',result:'',status:'hypothesis',timestamp:Date.now()});
+  renderEcosystem();
+}
+
+async function renderEcosystem(){
+  const [conns,biz]=await Promise.all([dbAll('ecosystem'),dbAll('businesses')]);
+  const box=document.getElementById('ecosystem-list');
+  if(!conns.length){box.innerHTML='<div class="empty"><div class="empty-i">⬡</div>No connections mapped. Every synergy starts as hypothesis.</div>';return;}
+  box.innerHTML=conns.map(c=>`
+    <div class="connection-card">
+      <div class="rb" style="margin-bottom:12px">
+        <div style="font-size:14px;font-weight:600">${c.name}</div>
+        <div>
+          <select style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:4px 8px;font-size:11px;font-family:var(--mono)" onchange="updateConn('${c.id}','status',this.value)">
+            <option value="hypothesis" ${c.status==='hypothesis'?'selected':''}>hypothesis</option>
+            <option value="testing" ${c.status==='testing'?'selected':''}>testing</option>
+            <option value="validated" ${c.status==='validated'?'selected':''}>validated</option>
+            <option value="failed" ${c.status==='failed'?'selected':''}>failed</option>
+          </select>
+          <button class="btn btn-d btn-sm" style="margin-left:8px" onclick="deleteConn('${c.id}')">✕</button>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="field"><label>Hypothesis — what synergy should exist</label><textarea style="min-height:60px" onchange="updateConn('${c.id}','hypothesis',this.value)">${c.hypothesis||''}</textarea></div>
+        <div class="field"><label>Validation method — how to test this connection</label><textarea style="min-height:60px" onchange="updateConn('${c.id}','validation',this.value)">${c.validation||''}</textarea></div>
+      </div>
+      <div class="field"><label>Real world result — what actually happened</label><textarea style="min-height:60px" onchange="updateConn('${c.id}','result',this.value)">${c.result||''}</textarea></div>
+    </div>`).join('');
+}
+
+async function updateConn(id,key,val){const c=await dbGet('ecosystem',id);c[key]=val;await dbPut('ecosystem',c);}
+async function deleteConn(id){await dbDel('ecosystem',id);renderEcosystem();}
+
+// ── SETTINGS ─────────────────────────────────────────────────────────────────
+function updateStorage(){
+  const m=document.getElementById('storage-mode').value;
+  document.getElementById('api-config').style.display=m==='remote'?'block':'none';
+  document.getElementById('api-dot').className='dot '+(m==='remote'?'dot-remote':'dot-local');
+  document.getElementById('api-label').textContent=m==='remote'?'remote / api':'local / indexdb';
+}
+
+async function saveAPIConfig(){
+  await dbPut('settings',{id:'apiUrl',value:document.getElementById('api-url').value});
+  await dbPut('settings',{id:'mcpUrl',value:document.getElementById('mcp-url').value});
+  alert('API config saved.');
+}
+
+async function exportAll(){
+  const [biz,prios,assess,const_,eco]=await Promise.all([dbAll('businesses'),dbAll('priorities'),dbGet('assessment','current'),dbAll('constitution'),dbAll('ecosystem')]);
+  dl(JSON.stringify({businesses:biz,priorities:prios,assessment:assess,constitution:const_,ecosystem:eco,exportDate:new Date().toISOString()},null,2),'bfs_export_'+Date.now()+'.json','application/json');
+}
+
+async function clearAll(){
+  if(!confirm('Delete everything? This cannot be undone.')) return;
+  ['businesses','priorities','assessment','constitution','ecosystem'].forEach(s=>{db.transaction(s,'readwrite').objectStore(s).clear();});
+  renderDashboard();
+}
+
+// ── UTILS ────────────────────────────────────────────────────────────────────
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function timeAgo(ts){const d=Date.now()-ts;if(d<60000)return 'just now';if(d<3600000)return Math.floor(d/60000)+'m ago';if(d<86400000)return Math.floor(d/3600000)+'h ago';return Math.floor(d/86400000)+'d ago';}
+function dl(content,name,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;a.click();}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+initDB().then(()=>{renderDashboard();recalcTotal();});
+</script>
+</body>
+</html>
