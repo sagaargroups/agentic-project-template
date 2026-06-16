@@ -1,33 +1,44 @@
-# 🧠 System Context & Founder's Directive
+# 🤖 AI Agent Setup Directive
 
-> **Last Updated:** 2026-06-14
-> **Entity:** Sagaar-Universe (Agency & Parent Entity)
+**ATTENTION AI AGENT:** You have just cloned the Universal Project Template. Your job is to transform this generic template into a specific, fully-configured project. Follow the exact sequence below.
 
-## 1. The Vision
-Sagaar-Universe is the parent operating entity that manages, builds, and scales multiple client brands and internal SaaS products (like AppMarkit). We leverage hyper-automation and AI agents to do the work of an entire department. Our goal is to create scalable, self-maintaining systems for every project we touch.
+---
 
-## 2. Current State & Assets
-We have established a robust foundation for building brands:
-- **Universal Agent Skills:** We have powerful skill creators, MCP connectors, and universal production standards inside `0. skills-agents-workflows-automations-systems/`.
-- **Standardized Project Tree:** Every new client brand or project gets the exact same folder structure (Brand Identity, Registration, Codebase, .brain, Docs, Wiki, SEO, Ops).
-- **Core SaaS Product:** App Markit is our flagship product, built on Next.js 15, Drizzle, and Stripe, currently implementing heavy Generative Engine Optimization (GEO).
+## Step 1: Gather Project Context
+Before making any file changes, ask the human founder (Sagar) the following questions to gather the required context:
+1. **What is the name of this new project/brand?**
+2. **What is the core vision or one-liner for this project?**
+3. **What is the primary tech stack?** (e.g., Next.js, Python, No-code)
+4. **Where should the codebase live?** (Inside `project-itself/` or a separate repo?)
 
-## 3. Playbooks & Timeline (If/Then Scenarios)
-*This section dictates how we react to specific triggers across all brands.*
+*Do not proceed to Step 2 until the founder answers these questions.*
 
-- **If a new client brand is onboarded:**
-  1. Clone the universal agent skills.
-  2. Run the `project-scaffolder` to generate the brand folder tree.
-  3. Fill out the `context.md` specific to that new brand.
+---
 
-- **If a major competitor launches a similar feature:**
-  1. Document their approach in `competitor-analysis.md`.
-  2. Trigger our AI agents to optimize our platform's `llms.txt` and wiki documentation to outrank them on AI search engines (Perplexity, ChatGPT).
+## Step 2: Global Renaming & Restructuring
+Once you have the answers, perform the following actions:
+1. **Rename the Root Directory:** Rename the current root folder to the new `[Project-Name]`.
+2. **Update Context:** Open `brain/context.md` and replace the generic text with the specific vision, tech stack, and playbooks for this new project.
+3. **Initialize Git:** Run `rm -rf .git` to clear the template's git history, then run `git init` to start a fresh repository for the new project.
 
-- **If an AI Agent is confused or lacks context:**
-  1. The agent must pause and ask the human founder for clarification.
-  2. Once clarified, the agent MUST update this `context.md` or create a new skill so it never has to ask that question again.
+---
 
-## 4. Result-Driven Planning
-- **Immediate Goal:** Standardize the `.brain` structure across all active projects so AI agents can autonomously manage SEO, UI consistency, and deployments.
-- **Long-Term Goal:** Transition the agency into a fully agentic workforce where human involvement is purely strategic and visionary.
+## Step 3: Scaffold the Brand Architecture
+Using your `project-scaffolder` skill (or manually), create the following standard folder tree inside the root directory:
+```text
+├── brand-identity/ (LOGO, COLORS, TYPOGRAPHY, BRAND-VOICE)
+├── registration/ (Account setup checklists)
+├── docs/ (Architecture and Organization)
+├── wiki/ (Public-facing docs)
+├── seo/ (llms.txt, keywords, listings)
+└── ops/ (Infrastructure, legal, security)
+```
+
+---
+
+## Step 4: Finalization
+1. Add the new project's specific "if this happens, do that" playbooks to `brain/context.md`.
+2. Notify the founder that the environment is fully scaffolded and ready for development.
+3. Ask the founder if they want to run the `agentic-skill-creator` to generate any specific skills for this project.
+
+> **CRITICAL RULE:** Do NOT delete the `brain/` structure. It must remain intact as the operating system for this new project.
