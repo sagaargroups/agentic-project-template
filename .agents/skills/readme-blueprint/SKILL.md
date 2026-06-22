@@ -1,3 +1,8 @@
+---
+name: readme-blueprint
+description: "Blueprint for the project README.md file."
+---
+
 every sub folder should have thier own context.md file and readme.md file to strea about the proejct or folder every thing 
 
 

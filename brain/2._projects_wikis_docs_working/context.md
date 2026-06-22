@@ -1,33 +1,17 @@
-# 🧠 System Context & Founder's Directive
+# 📝 Projects, Wikis, Docs & Working Context
 
-> **Last Updated:** 2026-06-14
-> **Entity:** Sagaar-Universe (Agency & Parent Entity)
+> **Folder Purpose:** The living memory of the system. This folder stores active work-in-progress documents, specific project documentation, wiki drafts, and historical working sessions (chat transcripts).
 
-## 1. The Vision
-Sagaar-Universe is the parent operating entity that manages, builds, and scales multiple client brands and internal SaaS products (like AppMarkit). We leverage hyper-automation and AI agents to do the work of an entire department. Our goal is to create scalable, self-maintaining systems for every project we touch.
+## 1. Allowed Contents
+- `session_X.md` files containing AI-Human chat transcripts
+- Drafts for external wikis or `llms.txt` files
+- Project-specific architectural diagrams or thought-processes
+- Temporary working scratchpads
 
-## 2. Current State & Assets
-We have established a robust foundation for building brands:
-- **Universal Agent Skills:** We have powerful skill creators, MCP connectors, and universal production standards inside `0. skills-agents-workflows-automations-systems/`.
-- **Standardized Project Tree:** Every new client brand or project gets the exact same folder structure (Brand Identity, Registration, Codebase, .brain, Docs, Wiki, SEO, Ops).
-- **Core SaaS Product:** App Markit is our flagship product, built on Next.js 15, Drizzle, and Stripe, currently implementing heavy Generative Engine Optimization (GEO).
+## 2. Operational Rules
+- **Timestamping:** All working sessions and major architectural drafts must be timestamped.
+- **Distillation:** Once a working session yields a clear result (like a new skill or a finished feature), the resulting artifact should be moved to its permanent home, leaving the transcript here for historical reference.
 
-## 3. Playbooks & Timeline (If/Then Scenarios)
-*This section dictates how we react to specific triggers across all brands.*
-
-- **If a new client brand is onboarded:**
-  1. Clone the universal agent skills.
-  2. Run the `project-scaffolder` to generate the brand folder tree.
-  3. Fill out the `context.md` specific to that new brand.
-
-- **If a major competitor launches a similar feature:**
-  1. Document their approach in `competitor-analysis.md`.
-  2. Trigger our AI agents to optimize our platform's `llms.txt` and wiki documentation to outrank them on AI search engines (Perplexity, ChatGPT).
-
-- **If an AI Agent is confused or lacks context:**
-  1. The agent must pause and ask the human founder for clarification.
-  2. Once clarified, the agent MUST update this `context.md` or create a new skill so it never has to ask that question again.
-
-## 4. Result-Driven Planning
-- **Immediate Goal:** Standardize the `.brain` structure across all active projects so AI agents can autonomously manage SEO, UI consistency, and deployments.
-- **Long-Term Goal:** Transition the agency into a fully agentic workforce where human involvement is purely strategic and visionary.
+## 3. AI Guardrails
+- **NEVER** treat information in this folder as executable code or final production rules unless explicitly verified. This is a scratchpad.
+- **ALWAYS** read through recent working sessions if you need context on why a specific design decision was made previously.

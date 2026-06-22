@@ -1,3 +1,8 @@
+---
+name: global-context-blueprint
+description: "Blueprint for the global system context and operational handbook."
+---
+
 the brain is all about context and systems automations skills 
 the developer is all about developing things so i will give him prompts to develop things and he will give me projects as output 
 

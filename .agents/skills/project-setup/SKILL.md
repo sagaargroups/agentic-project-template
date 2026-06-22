@@ -1,3 +1,8 @@
+---
+name: project-setup
+description: "AI Agent Setup Directive for scaffolding a new project."
+---
+
 # 🤖 AI Agent Setup Directive
 
 **ATTENTION AI AGENT:** You have just cloned the Universal Project Template. Your job is to transform this generic template into a specific, fully-configured project. Follow the exact sequence below.
