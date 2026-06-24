@@ -174,6 +174,18 @@ Avoid overwhelming users — max 3 questions per message. Start with the most im
 
 Conclude when there is a clear sense of functionality, tools, and output.
 
+### Step 1.5: Philosophy Filter (The Greatness Check)
+
+Before planning ANY skill, run it through the 5 philosophical filters in `references/philosophy.md`:
+
+1. **Duality Check** — Does it serve both execution (0) AND growth (1)?
+2. **SHAPE Compliance** — Score it: SOP rigor, Human control, Arbitrage value, Moat strength, Skill-building (≥15/25 to proceed)
+3. **Scale vs Speed** — Classify as tactical / strategic / ecosystem
+4. **Ecosystem Thinking** — Is the output reusable? Can it feed other skills?
+5. **Micro-Macro Balance** — Does it have precision AND context awareness?
+
+If a skill fails the greatness check, redesign before proceeding.
+
 ### Step 2: Plan Reusable Contents and MCP Tools
 
 Analyze each concrete example by:
