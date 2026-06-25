@@ -2,7 +2,7 @@
 
 **ATTENTION AI AGENT:** You have just been given access to the Agentic Project Template. Your job is to transform this generic template into a fully-configured, project-specific environment. Follow the exact sequence below.
 
-> **CRITICAL RULE:** Do NOT delete the `brain/` structure or `.agents/` directory. They must remain intact as the operating system for this project.
+> **CRITICAL RULE:** Do NOT delete the `.brain/` structure or `.agents/` directory. They must remain intact as the operating system for this project.
 
 ---
 
@@ -20,18 +20,41 @@ Before making ANY file changes, ask the human founder the following questions:
 
 ---
 
-## Step 2: Configure the Brain
+## Step 2: Select Skill Bundles
 
-Once you have the answers, perform the following actions:
+Present this menu to the founder. They select which plugin bundles their project needs:
 
-1. **Update `brain/context.md`:** Replace all `[PLACEHOLDER]` fields with the specific vision, tech stack, industry, conventions, and guardrails for this project.
-2. **Update `brain/readme.md`:** Replace the project name if needed.
-3. **Leave warehouse folders (0, 1) intact:** These contain community-contributed skills and tools that are project-agnostic.
-4. **Clear personal folders (2, 3, 4):** Remove any example/template content from `2_working/`, `3_learning/`, and `4_tasks-and-logs/` — but keep the `context.md` and `readme.md` files.
+```
+Which skill bundles does your project need? (Select all that apply)
+
+☐ brand-establishment    — Brand identity, voice, logo, IP protection
+☐ development            — Frontend, backend, API, testing, MCP builder
+☐ content-engine         — Topic research, script writing, video prompts
+☐ seo-geo                — Keyword research, on-page SEO, GEO strategy
+☐ devops-pipeline        — CI/CD, Docker, monitoring, infrastructure
+☐ data-analytics         — Dashboards, reports, A/B testing, metrics
+☐ finance-ops            — Invoicing, tax, expenses, audit support
+☐ legal-compliance       — Privacy policy, terms, IP protection
+☐ productivity           — Task management, meetings, time tracking
+☐ sales-growth           — Lead gen, CRM, pitch decks, onboarding
+```
+
+After selection:
+1. **Keep** only the selected plugin folders inside `.brain/0_warehouse-skills/plugins/`
+2. **Delete** all unselected plugin folders
+3. **Always keep** `skills/` (meta-skills like `contribution-router`) and `third-party/` intact
 
 ---
 
-## Step 3: Initialize the Project
+## Step 3: Configure the Brain
+
+1. **Update `.brain/context.md`:** Replace all `[PLACEHOLDER]` fields with the specific vision, tech stack, industry, conventions, and guardrails.
+2. **Update `.brain/readme.md`:** Replace the project name if needed.
+3. **Clear personal folders (2, 3, 4):** Remove example content but keep `context.md` and `readme.md`.
+
+---
+
+## Step 4: Initialize the Project
 
 1. **Initialize Fresh Git:**
    ```bash
@@ -39,13 +62,13 @@ Once you have the answers, perform the following actions:
    git init
    ```
 2. **Rename the Root Directory** (if needed): Rename to `[Project-Name]`.
-3. **Set up `project-itself/`:** If the codebase lives here, scaffold the appropriate structure for the chosen tech stack.
+3. **Set up codebase:** Scaffold the appropriate structure for the chosen tech stack.
 
 ---
 
-## Step 4: Scaffold Brand Architecture (Optional)
+## Step 5: Scaffold Brand Architecture (Optional)
 
-If this is a brand/product project, create the following folder tree inside the root or `project-itself/`:
+If the founder selected `brand-establishment`, create:
 
 ```text
 ├── brand-identity/    (Logo, colors, typography, brand voice)
@@ -58,50 +81,32 @@ If this is a brand/product project, create the following folder tree inside the 
 
 ---
 
-## Step 5: Daily Workflow Setup
+## Step 6: Daily Workflow Setup
 
-Explain the following workflow to the founder:
+Explain to the founder:
 
-### Daily Contribution Tracking
-After each working session, create or update a daily log in `brain/4_tasks-and-logs/`:
-```markdown
-## [YYYY-MM-DD]
-### ✅ Completed
-- [What was accomplished]
-
-### 🚧 In Progress
-- [What's being worked on]
-
-### 🔜 Next
-- [What's planned]
-```
-
-### Working Session Archiving
-Save significant AI-human working sessions as `session_YYYY-MM-DD.md` in `brain/2_working/`.
-
-### Learning Accumulation
-When discovering useful patterns, frameworks, or research, save them in `brain/3_learning/` with clear filenames and source links.
+- **Daily logs** → `brain/4_tasks-and-logs/` with date headers and ✅/🚧/🔜 sections
+- **Session archives** → `brain/2_working/session_YYYY-MM-DD.md`
+- **Learning** → `brain/3_learning/` with descriptive filenames and source links
 
 ---
 
-## Step 6: Finalization
+## Step 7: Finalization
 
-1. **Create the first daily log** in `brain/4_tasks-and-logs/` documenting the setup.
-2. **Notify the founder** that the environment is fully scaffolded and ready.
-3. **Ask the founder** if they want to create any project-specific skills in `.agents/skills/`.
+1. Create the first daily log documenting the setup.
+2. Notify the founder the environment is ready.
+3. Ask if they want to create project-specific skills in `.agents/skills/`.
 
 ---
 
-## Agent Skill Standard
+## Standards Reference
 
-When creating new skills for `.agents/skills/`, follow this format:
+### Naming Standard
+- Always `kebab-case`, max 3 words
+- Skills = specific actions (`keyword-research`, not `seo`)
+- Plugins = domain categories (`content-engine`, not `my-stuff`)
 
-```
-skill-name/
-└── SKILL.md
-```
-
-### SKILL.md Format:
+### SKILL.md Format
 ```yaml
 ---
 name: skill-name
@@ -110,5 +115,14 @@ description: "One-line description of what this skill does."
 
 # Skill Title
 
-[Detailed instructions for the AI agent...]
+[Instructions for the AI agent...]
+```
+
+### Plugin Format
+```
+plugin-name/
+├── plugin.json          # name, description, skills list
+└── skills/
+    └── skill-name/
+        └── SKILL.md
 ```
