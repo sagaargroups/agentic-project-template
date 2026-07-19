@@ -1,0 +1,285 @@
+{
+  "name": "tool-registry",
+  "description": "Central catalog of MCP servers, external tools, and API integrations. This is a registry — not live servers.",
+  "tools": [
+    {
+      "name": "figma-design-mcp-server",
+      "description": "AI Figma MCP Server — Design web and app UIs using natural language prompts.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/figma-design-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/figma-design-mcp"
+    },
+    {
+      "name": "sql-mcp-server",
+      "description": "Query SQL databases using natural language — connect to PostgreSQL, MySQL, SQLite, etc.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/sql-mcp-server",
+      "docs_url": "https://github.com/modelcontextprotocol/sql-mcp-server"
+    },
+    {
+      "name": "shopify-admin-mcp",
+      "description": "Manage Shopify stores using natural language — products, orders, customers, collections.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/shopify-admin-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/shopify-admin-mcp"
+    },
+    {
+      "name": "stripe-mcp",
+      "description": "Manage payments, subscriptions, invoices, and customers using natural language.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/stripe-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/stripe-mcp"
+    },
+    {
+      "name": "github-mcp-server",
+      "description": "Full GitHub interaction — repos, issues, PRs, code navigation, team management.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/github-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/github-mcp"
+    },
+    {
+      "name": "npm-mcp-server",
+      "description": "Manage npm packages, libraries, and dependencies using natural language.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/npm-mcp-server",
+      "docs_url": "https://github.com/modelcontextprotocol/npm-mcp-server"
+    },
+    {
+      "name": "slack-mcp",
+      "description": "Communicate and collaborate using natural language within Slack workspaces.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/slack-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/slack-mcp"
+    },
+    {
+      "name": "aws-mcp",
+      "description": "Deploy, manage, and monitor AWS services using natural language.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/aws-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/aws-mcp"
+    },
+    {
+      "name": "vscode-agent-mcp",
+      "description": "VS Code extension that exposes IDE functionality as MCP tools for AI agents.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/vscode-agent-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/vscode-agent-mcp"
+    },
+    {
+      "name": "firebase-mcp",
+      "description": "Manage Firebase services using natural language — databases, auth, storage, functions.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/firebase-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/firebase-mcp"
+    },
+    {
+      "name": "notion-mcp",
+      "description": "Organize projects, notes, and databases using natural language in Notion.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/notion-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/notion-mcp"
+    },
+    {
+      "name": "trello-mcp",
+      "description": "Manage Trello boards, lists, and cards using natural language.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/trello-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/trello-mcp"
+    },
+    {
+      "name": "salesforce-mcp",
+      "description": "Manage CRM data, leads, opportunities, and accounts using natural language.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/salesforce-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/salesforce-mcp"
+    },
+    {
+      "name": "monday-mcp",
+      "description": "Manage projects, workflows, and tasks using natural language in monday.com.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/monday-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/monday-mcp"
+    },
+    {
+      "name": "asana-mcp",
+      "description": "Manage tasks, projects, and teams using natural language in Asana.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/asana-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/asana-mcp"
+    },
+    {
+      "name": "jira-mcp",
+      "description": "Manage Scrum/Agile workflows using natural language in Jira.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/jira-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/jira-mcp"
+    },
+    {
+      "name": "linear-mcp",
+      "description": "Manage issues, projects, and sprints using natural language in Linear.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/linear-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/linear-mcp"
+    },
+    {
+      "name": "linear-mcp-server",
+      "description": "Issue tracking, roadmaps, and workflows with natural language prompts.",
+      "type": "mcp",
+      "setup_url": "https://github.com/linearmxp/linear-mcp-server",
+      "docs_url": "https://github.com/linearmxp/linear-mcp-server"
+    },
+    {
+      "name": "youtube-mcp-server",
+      "description": "Find, analyze, and manage YouTube channels, videos, and comments using natural language.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/youtube-mcp-server",
+      "docs_url": "https://github.com/modelcontextprotocol/youtube-mcp-server"
+    },
+    {
+      "name": "gemini-mcp-server",
+      "description": "Interact with Gemini API for coding, research, and creative tasks using natural language.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/gemini-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/gemini-mcp"
+    },
+    {
+      "name": "vite-mcp-server",
+      "description": "Build web applications faster using Vite-powered development environment with MCP integration.",
+      "type": "mcp",
+      "setup_url": "https://github.com/ Vite-Mcp/vite-mcp-server",
+      "docs_url": "https://github.com/ Vite-Mcp/vite-mcp-server"
+    },
+    {
+      "name": "flutter-mcp-server",
+      "description": "Build high-performance cross-platform apps using Flutter with MCP integration.",
+      "type": "mcp",
+      "setup_url": "https://github.com/flutter-mcp/flutter-mcp-server",
+      "docs_url": "https://github.com/flutter-mcp/flutter-mcp-server"
+    },
+    {
+      "name": "fastapi-mcp",
+      "description": "Build Python APIs quickly using FastAPI with MCP integration for code generation, testing, and documentation.",
+      "type": "mcp",
+      "setup_url": "https://github.com/FastMcp/fastapi-mcp",
+      "docs_url": "https://github.com/FastMcp/fastapi-mcp"
+    },
+    {
+      "name": "huggingface-mcp",
+      "description": "Integrate Hugging Face models for NLP, computer vision, and audio tasks using MCP.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/huggingface-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/huggingface-mcp"
+    },
+    {
+      "name": "openai-mcp-server",
+      "description": "Interact with OpenAI models for coding, research, and creative tasks using natural language.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/openai-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/openai-mcp"
+    },
+    {
+      "name": "langgraph-mcp",
+      "description": "Build AI agents with complex workflows using LangGraph and MCP tools.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/langgraph-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/langgraph-mcp"
+    },
+    {
+      "name": "redis-mcp",
+      "description": "Manage Redis data structures using natural language with MCP integration.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/redis-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/redis-mcp"
+    },
+    {
+      "name": "mongodb-mcp",
+      "description": "Manage MongoDB databases with natural language queries and operations via MCP.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/mongodb-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/mongodb-mcp"
+    },
+    {
+      "name": "mysql-mcp",
+      "description": "Query MySQL databases using natural language with MCP integration.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/mysql-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/mysql-mcp"
+    },
+    {
+      "name": "postgresql-mcp",
+      "description": "Query PostgreSQL databases using natural language with MCP integration.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/postgresql-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/postgresql-mcp"
+    },
+    {
+      "name": "sqlite-mcp",
+      "description": "Query SQLite databases using natural language with MCP integration.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/sqlite-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/sqlite-mcp"
+    },
+    {
+      "name": "gitlab-mcp",
+      "description": "Manage GitLab projects, issues, and merge requests using natural language.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/gitlab-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/gitlab-mcp"
+    },
+    {
+      "name": "notion-mcp",
+      "description": "Organize notes, tasks, and projects in Notion using natural language.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/notion-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/notion-mcp"
+    },
+    {
+      "name": "linear-mcp",
+      "description": "Manage issues and projects in Linear using natural language.",
+      "type": "mcp",
+      "setup_url": "https://github.com/linearmxp/linear-mcp-server",
+      "docs_url": "https://github.com/linearmxp/linear-mcp-server"
+    },
+    {
+      "name": "stripe-mcp-server",
+      "description": "Manage payments, subscriptions, and customers using Stripe MCP server.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/stripe-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/stripe-mcp"
+    },
+    {
+      "name": "cloudflare-mcp",
+      "description": "Manage Cloudflare services including DNS, Workers, and Pages using natural language.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/cloudflare-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/cloudflare-mcp"
+    },
+    {
+      "name": "slack-mcp",
+      "description": "Communicate and manage Slack workspaces using natural language.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/slack-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/slack-mcp"
+    },
+    {
+      "name": "github-mcp",
+      "description": "Full GitHub integration with repos, issues, PRs, and team management via MCP.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/github-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/github-mcp"
+    },
+    {
+      "name": "google-sheets-mcp",
+      "description": "Manage Google Sheets with natural language querying and data manipulation.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/google-sheets-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/google-sheets-mcp"
+    },
+    {
+      "name": "google-calendar-mcp",
+      "description": "Manage Google Calendar with events, availability, and scheduling via MCP.",
+      "type": "mcp",
+      "setup_url": "https://github.com/modelcontextprotocol/google-calendar-mcp",
+      "docs_url": "https://github.com/modelcontextprotocol/google-calendar-mcp"
+    }
+  }

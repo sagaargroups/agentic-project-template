@@ -2,7 +2,7 @@
 
 **ATTENTION AI AGENT:** You have just been given access to the Agentic Project Template. Your job is to transform this generic template into a fully-configured, project-specific environment. Follow the exact sequence below.
 
-> **CRITICAL RULE:** Do NOT delete the `.brain/` structure or `.agents/` directory. They must remain intact as the operating system for this project.
+> **CRITICAL RULE:** Do NOT delete the `.agents/` directory or its structure. It must remain intact as the operating system for this project.
 
 ---
 
@@ -14,43 +14,55 @@ Before making ANY file changes, ask the human founder the following questions:
 2. **What is the core vision or one-liner for this project?**
 3. **What is the primary tech stack?** (e.g., Next.js, Python/FastAPI, React Native, No-code)
 4. **What industry does this project serve?** (e.g., FinTech, HealthTech, E-Commerce, EdTech)
-5. **Where should the codebase live?** (Inside `project-itself/` or should the repo root be the project?)
+5. **Where should the codebase live?** (Inside this directory or should the repo root be the project?)
 
 *Do not proceed to Step 2 until the founder answers ALL questions.*
 
 ---
 
-## Step 2: Select Skill Bundles
+## Step 2: Select Industry Skills & Plugins
 
-Present this menu to the founder. They select which plugin bundles their project needs:
+Present this menu to the founder. They select which skill bundles their project needs:
 
+### Industry Skills (from `.agents/skills/`)
 ```
-Which skill bundles does your project need? (Select all that apply)
+Which industry skills does your project need? (Select all that apply)
 
-☐ brand-establishment    — Brand identity, voice, logo, IP protection
-☐ development            — Frontend, backend, API, testing, MCP builder
-☐ content-engine         — Topic research, script writing, video prompts
-☐ seo-geo                — Keyword research, on-page SEO, GEO strategy
-☐ devops-pipeline        — CI/CD, Docker, monitoring, infrastructure
-☐ data-analytics         — Dashboards, reports, A/B testing, metrics
-☐ finance-ops            — Invoicing, tax, expenses, audit support
-☐ legal-compliance       — Privacy policy, terms, IP protection
-☐ productivity           — Task management, meetings, time tracking
-☐ sales-growth           — Lead gen, CRM, pitch decks, onboarding
+☐ _universal              — Cross-industry essentials (always recommended)
+☐ information-technology   — Production standards, UI system, DevOps
+☐ healthcare              — Clinical workflows, medicine categories, HIPAA
+☐ fintech                 — Financial compliance, trading, payments
+☐ ecommerce               — Store setup, inventory, fulfillment
+☐ edtech                  — Learning management, curriculum design
+☐ legal                   — Contract analysis, compliance frameworks
+☐ marketing-media         — Content strategy, social media, SEO
+☐ manufacturing           — Supply chain, quality control
+☐ real-estate             — Property management, listings
+☐ hospitality             — Booking systems, guest experience
+☐ logistics               — Fleet management, routing
+☐ agriculture             — Crop planning, supply chain
+```
+
+### Plugins (from `.agents/plugins/`)
+```
+Which plugin bundles do you need?
+
+☐ brand-establishment     — Brand identity, voice, logo, IP protection
+☐ super-intelligence      — Claude Skills, researched articles, automation
 ```
 
 After selection:
-1. **Keep** only the selected plugin folders inside `.brain/0_warehouse-skills/plugins/`
-2. **Delete** all unselected plugin folders
-3. **Always keep** `skills/` (meta-skills like `contribution-router`) and `third-party/` intact
+1. **Keep** only the selected industry folders inside `.agents/skills/`
+2. **Delete** all unselected industry folders (keep `_universal/` always)
+3. **Keep** only selected plugin folders inside `.agents/plugins/`
 
 ---
 
 ## Step 3: Configure the Brain
 
-1. **Update `.brain/context.md`:** Replace all `[PLACEHOLDER]` fields with the specific vision, tech stack, industry, conventions, and guardrails.
-2. **Update `.brain/readme.md`:** Replace the project name if needed.
-3. **Clear personal folders (2, 3, 4):** Remove example content but keep `context.md` and `readme.md`.
+1. **Update `.agents/brain/context.md`:** Replace all `[PLACEHOLDER]` fields with the specific vision, tech stack, industry, conventions, and guardrails.
+2. **Update `.agents/brain/readme.md`:** Replace the project name if needed.
+3. **Clear personal folders (working, learning, tasks):** Remove example content but keep `context.md` and `readme.md`.
 
 ---
 
@@ -85,9 +97,9 @@ If the founder selected `brand-establishment`, create:
 
 Explain to the founder:
 
-- **Daily logs** → `brain/4_tasks-and-logs/` with date headers and ✅/🚧/🔜 sections
-- **Session archives** → `brain/2_working/session_YYYY-MM-DD.md`
-- **Learning** → `brain/3_learning/` with descriptive filenames and source links
+- **Daily logs** → `.agents/brain/tasks/` with date headers and ✅/🚧/🔜 sections
+- **Session archives** → `.agents/brain/working/session_YYYY-MM-DD.md`
+- **Learning** → `.agents/brain/learning/` with descriptive filenames and source links
 
 ---
 
@@ -99,12 +111,80 @@ Explain to the founder:
 
 ---
 
+## Step 8: Clone & Contribute (Show This to the User)
+
+After setup is complete, present the following guide to the founder:
+
+---
+
+### 🔽 How to Get More Skills from the Community
+
+The repo grows over time. To grab new skills others have built:
+
+**Option A: AI-Driven (Recommended)**
+1. Open [CLONE_WITH_AI.md](CLONE_WITH_AI.md)
+2. Copy the contents and paste into your AI agent
+3. The AI will detect what you already have and offer only new items
+
+**Option B: Manual Git**
+```bash
+# 1. Add the template repo as a remote
+git remote add warehouse https://github.com/sagaargroups/agentic-project-template.git
+
+# 2. Fetch without merging
+git fetch warehouse main
+
+# 3. Copy a specific skill into your project
+git checkout warehouse/main -- project-itself/.agents/skills/[industry]/[skill-name]
+
+# 4. Or copy a specific plugin
+git checkout warehouse/main -- project-itself/.agents/plugins/[plugin-name]
+```
+
+> **You only pull what you need.** Your project stays clean.
+
+---
+
+### 🔼 How to Contribute Your Skills Back
+
+When you build a skill during your work and want to share it:
+
+**Option A: Let your AI do it**
+> Tell your agent: *"Run the contribution-router skill on this and submit it."*
+
+**Option B: Manual PR**
+```bash
+# 1. Fork the template repo on GitHub
+# 2. Clone your fork
+git clone https://github.com/[your-username]/agentic-project-template.git
+cd agentic-project-template
+
+# 3. Add your skill to the correct industry folder
+mkdir -p project-itself/.agents/skills/[industry]/[skill-name]
+# Copy your SKILL.md into it
+
+# 4. Push and open a PR
+git checkout -b skill/[skill-name]
+git add .
+git commit -m "[SKILL] skill-name — one-line description"
+git push origin skill/[skill-name]
+```
+
+**Contribution checklist:**
+- [ ] Name is `kebab-case`, max 3 words
+- [ ] `SKILL.md` has YAML frontmatter (`name`, `description`)
+- [ ] Placed in the correct industry folder
+- [ ] No hardcoded secrets
+- [ ] PR title: `[SKILL] skill-name` or `[PLUGIN] plugin-name`
+
+---
+
 ## Standards Reference
 
 ### Naming Standard
 - Always `kebab-case`, max 3 words
 - Skills = specific actions (`keyword-research`, not `seo`)
-- Plugins = domain categories (`content-engine`, not `my-stuff`)
+- Industry folders = domain verticals (`information-technology`, not `my-dev-stuff`)
 
 ### SKILL.md Format
 ```yaml

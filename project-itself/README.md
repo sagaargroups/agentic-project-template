@@ -30,69 +30,57 @@ This is **not** another boilerplate. This is a **structured operating system** f
 |---|---|---|
 | **AI Context** | One massive README.md | Localized `context.md` in every folder |
 | **Agent Rules** | None — AI guesses | `.agents/skills/` with explicit guardrails |
-| **Knowledge Persistence** | Lost between sessions | `brain/3_learning/` accumulates over time |
-| **Task Tracking** | External tools (Jira, Linear) | `brain/4_tasks-and-logs/` with daily logs |
-| **Growth Planning** | Scattered notes | `brain/think_tank/` for strategic direction |
-| **Community Sharing** | Copy-paste snippets | Warehouse folders for skills & tools |
+| **Knowledge Persistence** | Lost between sessions | `brain/learning/` accumulates over time |
+| **Task Tracking** | External tools (Jira, Linear) | `brain/tasks/` with daily logs |
+| **Growth Planning** | Scattered notes | `brain/think-tank/` for strategic direction |
+| **Industry Skills** | Copy-paste snippets | `skills/[industry]/` organized by vertical |
 
 ---
 
 ## ⚡ Quick Start
 
-### 1. Clone the Template
+### Option A: Selective Clone (Recommended)
+Don't need the whole repo? Use our AI-powered selective clone:
+
+1. Open [CLONE_WITH_AI.md](CLONE_WITH_AI.md)
+2. Copy the entire contents
+3. Paste it into your AI agent (Cursor, Claude Code, Antigravity, etc.)
+4. The AI will understand your project, show you what's available, and copy only what you need
+
+### Option B: Full Clone
 ```bash
-git clone https://github.com/[your-username]/agentic-project-template.git my-project
+git clone https://github.com/sagaargroups/agentic-project-template.git my-project
 cd my-project
 ```
 
-### 2. Let Your AI Agent Set It Up
-Open the project in your AI coding environment (Cursor, Antigravity, etc.) and tell your agent:
-
+Then tell your AI agent:
 > "Read `setup.md` and follow its instructions to configure this project for me."
-
-Your AI will ask you a few questions (project name, tech stack, vision), then automatically:
-- Update all context files with your project-specific info
-- Initialize a fresh Git repository
-- Scaffold the brand architecture
-- Prepare the brain for your project's lifecycle
-
-### 3. Start Building
-Your project codebase goes inside `project-itself/` (or use the root as the parent). The `brain/` grows with you — accumulating skills, learning, and context over time.
 
 ---
 
 ## 🔍 How It Works
 
 ### The Dual-File Standard
-Every folder in `brain/` contains exactly **two files**:
+Every folder inside `brain/` contains exactly **two files**:
 
 | File | Audience | Purpose |
 |------|----------|---------|
 | `context.md` | 🤖 AI Agents | Machine-readable boundaries, allowed contents, and guardrails |
 | `readme.md` | 👤 Humans | Human-readable explanation and usage guide |
 
-This means your AI agent always knows the rules, and you always know what's going on.
+### Everything Lives Inside `.agents/`
+The `.agents/` directory is the single root for all intelligence:
 
-### The Brain Architecture
 ```
-brain/
-├── context.md              # 🎯 Master context (tech stack, vision, guardrails)
-├── readme.md               # 📖 Human guide to the brain
-│
-├── 0_warehouse-skills/     # 📦 Community-contributed AI skills & automations
-├── 1_warehouse-tools/      # 🔧 Community-contributed helper apps & scripts
-│
-├── 2_working/              # 📝 Day-to-day working sessions & docs
-├── 3_learning/             # 🔬 Persistent research & knowledge
-├── 4_tasks-and-logs/       # 📋 Task checklists & daily contribution logs
-│
-└── think_tank/             # 💡 Growth direction & future possibilities
+.agents/
+├── brain/              # 🧠 Project intelligence & memory
+├── skills/             # 🌍 Industry-organized skills (The God Book)
+│   ├── _universal/     #    Cross-industry skills (always needed)
+│   └── [industry]/     #    Industry-specific skills
+├── workflows/          # ⚡ Multi-step automation flows
+├── plugins/            # 📦 Bundled multi-skill packages
+└── tool-registry/      # 🔧 MCP & tool catalog (registry only)
 ```
-
-### Warehouses vs. Personal Space
-- **Warehouses (0, 1)** are **community-growing**. They expand as contributors add new skills and tools. Think of them as shared libraries that get better over time.
-- **Personal Folders (2, 3, 4)** are **your project's private memory**. They grow as your project evolves.
-- **Think Tank** is the strategic layer for planning your project's future.
 
 ---
 
@@ -101,69 +89,96 @@ brain/
 ```
 agentic-project-template/
 │
-├── .agents/
-│   └── skills/                      # 🤖 AI agent skill definitions
-│       ├── global-context-blueprint/ #    How to write context.md files
-│       ├── project-baseline/         #    Mandatory files every project needs
-│       ├── project-setup/            #    The setup directive skill
-│       └── readme-blueprint/         #    How to write README.md files
+├── .agents/                                    # 🤖 The God Book — everything AI needs
+│   │
+│   ├── brain/                                  # 🧠 Project intelligence
+│   │   ├── context.md                          #    Master AI context
+│   │   ├── readme.md                           #    Master human README
+│   │   ├── working/                            #    Day-to-day sessions & docs
+│   │   ├── learning/                           #    Research & knowledge
+│   │   ├── tasks/                              #    Task checklists & daily logs
+│   │   └── think-tank/                         #    Growth & future planning
+│   │
+│   ├── skills/                                 # 🌍 Skills organized by industry
+│   │   ├── _universal/                         #    Cross-industry (always needed)
+│   │   │   ├── context-blueprint/              #    How to write context.md
+│   │   │   ├── project-baseline/               #    Mandatory project files
+│   │   │   ├── project-setup/                  #    Setup directive
+│   │   │   ├── readme-blueprint/               #    How to write README.md
+│   │   │   ├── warehouse-ecosystem/            #    Warehouse architecture
+│   │   │   ├── contribution-router/            #    Auto-classify contributions
+│   │   │   ├── agentic-skill-creator/          #    Create production skills
+│   │   │   └── skill-creator/                  #    Third-party skill creator
+│   │   │
+│   │   ├── information-technology/             #    IT skills (UI, production, etc.)
+│   │   ├── healthcare/                         #    Healthcare industry
+│   │   ├── fintech/                            #    Financial technology
+│   │   ├── ecommerce/                          #    E-commerce
+│   │   ├── edtech/                             #    Education technology
+│   │   ├── legal/                              #    Legal industry
+│   │   ├── marketing-media/                    #    Marketing & media
+│   │   ├── manufacturing/                      #    Manufacturing
+│   │   ├── real-estate/                        #    Real estate
+│   │   ├── hospitality/                        #    Hospitality
+│   │   ├── logistics/                          #    Logistics
+│   │   └── agriculture/                        #    Agriculture
+│   │
+│   ├── workflows/                              # ⚡ Automation workflows
+│   │   └── _universal/                         #    Cross-industry workflows
+│   │
+│   ├── plugins/                                # 📦 Bundled skill packages
+│   │   ├── brand-establishment/                #    Brand identity & prelaunch
+│   │   └── super-intelligence/                 #    Claude Skills, research, automation
+│   │
+│   └── tool-registry/                          # 🔧 MCP & tool catalog
+│       └── registry.json                       #    Central tool registry
 │
-├── brain/                           # 🧠 The project operating system
-│   ├── context.md                   #    Master AI context
-│   ├── readme.md                    #    Master human README
-│   ├── 0_warehouse-skills/          # 📦 Community skills (growing)
-│   ├── 1_warehouse-tools/           # 🔧 Community tools (growing)
-│   ├── 2_working/                   # 📝 Working sessions & docs
-│   ├── 3_learning/                  # 🔬 Research & knowledge
-│   ├── 4_tasks-and-logs/            # 📋 Tasks & daily logs
-│   └── think_tank/                  # 💡 Growth & future planning
-│
-├── project-itself/                  # 🏗️ Your actual codebase
-│
-├── .gitignore                       #    Git exclusion rules
-├── CONTRIBUTING.md                  #    How to contribute skills & tools
-├── LICENSE                          #    MIT License
-├── README.md                        #    This file
-└── setup.md                         #    🤖 AI agent setup directive
+├── .gitignore
+├── CLONE_WITH_AI.md                            # 🤖 AI-driven selective clone prompt
+├── CONTRIBUTING.md                             # 🤝 How to contribute
+├── LICENSE                                     # 📄 MIT License
+├── README.md                                   # 📖 This file
+└── setup.md                                    # 🤖 AI agent setup directive
 ```
 
 ---
 
-## 🏗️ Project Codebase
+## 🏗️ Industry Coverage
 
-This is where your actual project codebase lives.
+The `skills/` directory is organized by industry. Each industry folder contains skills, best practices, and workflows specific to that vertical. **This grows over time** as our team researches and the community contributes.
 
-### Options
-You have two ways to organize your code:
+| Industry | Status | Coverage |
+|---|---|---|
+| `_universal` | 🟢 Active | 8 skills — context, setup, baselines, skill creation |
+| `information-technology` | 🟢 Active | Production standards, UI system |
+| `healthcare` | 🟡 Growing | Clinical workflows, medicine categories |
+| `fintech` | 🟡 Growing | Compliance, trading workflows |
+| `ecommerce` | 🟡 Growing | Store setup, fulfillment |
+| `edtech` | 🟡 Growing | Learning management |
+| `legal` | 🟡 Growing | Contract analysis, compliance |
+| `marketing-media` | 🟡 Growing | Content strategy, SEO |
+| `manufacturing` | 🟡 Growing | Supply chain, quality control |
+| `real-estate` | 🟡 Growing | Property management |
+| `hospitality` | 🟡 Growing | Booking systems |
+| `logistics` | 🟡 Growing | Fleet management |
+| `agriculture` | 🟡 Growing | Crop planning |
 
-#### Option A: Code Inside This Folder
-Place your entire codebase here. This keeps a clean separation between your project code and the brain/ operating system.
-
-```
-project-itself/
-├── src/
-├── package.json
-├── ...
-```
-
-#### Option B: Root as Parent
-Use the repository root as your project root. In this case, `brain/` and `.agents/` sit alongside your `src/`, `package.json`, etc.
-
-Your AI agent will ask you which option you prefer during the `setup.md` configuration.
+> **Don't see your industry?** Open a PR or issue — we'll add it.
 
 ---
 
 ## 🤝 Contributing
 
-We actively welcome contributions — especially to the **warehouse folders**!
+We actively welcome contributions — especially to the **skills** and **plugins**!
 
 ### What You Can Contribute
-- **🤖 New Skills** → Add to `brain/0_warehouse-skills/`
-- **🔧 New Tools** → Add to `brain/1_warehouse-tools/`
-- **📝 Documentation improvements** → PRs welcome
-- **💡 Ideas** → Open an issue or add to `brain/think_tank/`
+- **🤖 New Skills** → Add to `skills/[industry]/` or `skills/_universal/`
+- **📦 New Plugins** → Add to `plugins/`
+- **🔧 Tool Registry Entries** → Add to `tool-registry/registry.json`
+- **📝 Documentation** → PRs welcome
+- **💡 Ideas** → Open an issue or add to `brain/think-tank/`
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines and format standards.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 ---
 
